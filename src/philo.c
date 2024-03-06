@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/06 14:09:25 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/06 14:55:14 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ static int	print_log(int flag, t_philo **data)
 	static int		death;
 
 	philo = *data;
-	pthread_mutex_lock(&philo->ft_print.mutex);
+	pthread_mutex_lock(&philo->data.mutex);
 	if (death != 0)
 		return (-1);
 	gettimeofday(&time, NULL);
-	if (flag == 0 && death == 0)
+	if ((flag == 0 && death == 0)
+		|| time.tv_usec - philo->last_eat.tv_usec > (long int)philo->infos.time_die)
 	{
-		death--;
-		// printf("[%li]\tPhilo[%i] died\n", time.tv_usec, philo->index);
+		philo->data.death = death--;
 		ft_death(&philo);
 	}
 	else if (flag == 1)
@@ -37,7 +37,7 @@ static int	print_log(int flag, t_philo **data)
 		printf("[%li]\tPhilo[%i] has taken a fork\n", time.tv_usec, philo->index);
 	if (flag == 2 && philo->eat == 2)
 		printf("[%li]\tPhilo[%i] is eating\n", time.tv_usec, philo->index);
-	pthread_mutex_unlock(&philo->ft_print.mutex);
+	pthread_mutex_unlock(&philo->data.mutex);
 	return (0);
 }
 
@@ -64,7 +64,7 @@ static int	ft_eat(t_philo **philo)
 
 	tmp = *philo;
 
-	while (tmp->next->eat == 1|| tmp->prev->eat == 1)
+	while (tmp->next->eat == 1 && tmp->prev->eat == 1)
 		continue ;
 	tmp->eat = 1;
 	if (print_log(2, philo) == -1)
@@ -89,15 +89,11 @@ static void	*ft_think(void *data)
 	philo = (t_philo *)data;
 	if (print_log(1, &philo) == -1)
 		return (NULL);
-		if (philo->next->eat == 1 || philo->prev->eat == 1)
-		gettimeofday(&time, NULL);
-		if (time.tv_usec - philo->last_eat.tv_usec > (long int)philo->infos.time_die)
-			print_log(0, &philo);
-		if (ft_eat(&philo) == -1)
-			return (NULL);
-		if (philo->ft_print.death == 0)
-			ft_think((void *)philo);
-	}
+	gettimeofday(&time, NULL);
+	if (ft_eat(&philo) == -1)
+		return (NULL);
+	if (philo->data.death == 0)
+		ft_think((void *)philo);
 	return (NULL);
 }
 
@@ -112,6 +108,7 @@ void	philo(t_philo *philos)
 		gettimeofday(&tmp->last_eat, NULL);
 		pthread_create(&tmp->thread, NULL, ft_think, tmp);
 		tmp = tmp->next;
+		usleep(10);
 	}
 	tmp = philos;
 	i = 0;

@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/06 11:15:13 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/06 14:16:54 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,6 @@ int	main(int argc, char **argv)
 		init_philo(infos);
 	}
 	else
-	{
-		printf("Bad arguments !\n");
-		printf("./philo\tnumber_of_philosophers\t");
-		printf("time_to_die time_to_eat\ttime_to_sleep\t");
-		printf("[number_of_times_each_philosopher_must_eat]\n");
-	}
+		printf("%s%s%s%s", ARG_ERROR, ARG_ERROR2, ARG_ERROR3, ARG_ERROR4);
 	return (0);
 }
