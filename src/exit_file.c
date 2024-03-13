@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 13:48:20 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/07 15:16:11 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/13 12:59:56 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ void	ft_death(t_philo **list)
 	gettimeofday(&time, NULL);
 	printf(DEATH, time.tv_usec, (*list)->index);
 	usleep(20000);
-	pthread_mutex_unlock(&(*list)->data.mutex);
-	pthread_mutex_destroy(&(*list)->data.mutex);
+	pthread_mutex_unlock((*list)->print_lock);
+	pthread_mutex_destroy((*list)->print_lock);
 	free_lst(list);
 	exit(EXIT_SUCCESS);
 }
