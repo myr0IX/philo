@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/13 16:07:12 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/14 13:41:28 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@
 
 typedef struct s_data
 {
-	long int	start_time;
 	int			death;
+	int			start;
 }				t_data;
 
 typedef struct s_info
@@ -52,27 +52,32 @@ typedef struct s_info
 typedef struct s_philo
 {
 	int				index;
-	int				eat;
 	long int		time;
+	long int	start_time;
+	long int		last_eat;
+	int				print;
 	size_t			count_eat;
-	pthread_t		thread;
-	t_info			info;
-	t_data			*data;
-	struct timeval	last_eat;
+	size_t			count_print;
 	struct s_philo	*prev;
 	struct s_philo	*next;
+	t_data			*data;
+	t_info			info;
+	pthread_t		thread;
+	pthread_mutex_t	phi_lock;
 	pthread_mutex_t	fork;
 	pthread_mutex_t	*fork_next;
-	pthread_mutex_t	*print_lock;
+	// pthread_mutex_t	*print_lock;
 }					t_philo;
 
-int		ft_atoi(const char *nptr);
-void	init_philo(t_info infos);
-void	ft_philo(t_philo *philo);
-void	free_lst(t_philo **list);
-void	error_lst(t_philo **list, char *msg);
-void	ft_death(t_philo **list);
-void	philo_end(t_philo **list);
-int		print_log(char *msg, t_philo **data);
+int			ft_atoi(const char *nptr);
+void		init_philo(t_info infos);
+void		ft_philo(t_philo *philo);
+void		free_lst(t_philo **list);
+void		error_lst(t_philo **list, char *msg);
+void		ft_death(t_philo **list);
+void		philo_end(t_philo **list);
+int			print_log(char *msg, t_philo **data);
+long int	get_time(t_philo *philo);
+int			find_less(t_philo *philo);
 
 #endif

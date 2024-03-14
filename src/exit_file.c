@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 13:48:20 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/13 12:59:56 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/14 14:38:03 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,18 @@ void	free_lst(t_philo **list)
 {
 	t_philo	*tmp;
 
-	while (*list != NULL)
+	while ((*list)->next != NULL)
 	{
 		tmp = *list;
 		*list = (*list)->next;
+		pthread_mutex_destroy(&tmp->fork);
 		free(tmp);
-		memset(tmp, 0, sizeof(t_philo));
+		// memset(tmp, 0, sizeof(t_philo));
 	}
-	*list = NULL;
+	*list = (*list)->next;
+	pthread_mutex_destroy(&tmp->fork);
+	free(tmp);
+	// *list = NULL;
 }
 
 void	error_lst(t_philo **list, char *msg)
@@ -38,12 +42,15 @@ void	ft_death(t_philo **list)
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	printf(DEATH, time.tv_usec, (*list)->index);
-	usleep(20000);
-	pthread_mutex_unlock((*list)->print_lock);
-	pthread_mutex_destroy((*list)->print_lock);
-	free_lst(list);
-	exit(EXIT_SUCCESS);
+	printf(DEATH, (*list)->time, (*list)->index);
+	(*list)->data->death = 1;
+	usleep(200000);
+	pthread_mutex_unlock(&(*list)->info.mutex);
+	// pthread_mutex_destroy((*list)->print_lock);
+	// free((*list)->data);
+	// pthread_mutex_destroy(&(*list)->info.mutex);
+	// free_lst(list);
+	// exit(EXIT_SUCCESS);
 }
 
 void	philo_end(t_philo **list)
