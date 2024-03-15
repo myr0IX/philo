@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 11:01:18 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 14:43:36 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 14:59:33 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static t_philo	*new_philo(size_t index, t_info info)
 		return (NULL);
 	memset(new, 0, sizeof(t_philo));
 	new->index = index;
-	new->info = &info;
+	new->info = info;
 	pthread_mutex_init(&new->fork, NULL);
 	return (new);
 }

@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 14:43:41 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 14:59:22 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ typedef struct s_philo
 	struct s_philo	*prev;
 	struct s_philo	*next;
 	t_data			*data;
-	t_info			*info;
+	t_info			info;
 	pthread_t		thread;
 	pthread_mutex_t	fork;
 	pthread_mutex_t	*fork_next;
