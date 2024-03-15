@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/14 14:33:39 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 10:31:16 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,17 @@ int	main(int argc, char **argv)
 	if (argc == 5)
 	{
 		info.phi_nbr = ft_atoi(argv[1]);
-		info.time_die = ft_atoi(argv[2]) * 1000;
-		info.time_eat = ft_atoi(argv[3]) * 1000;
-		info.time_sleep = ft_atoi(argv[4]) * 1000;
+		info.time_die = ft_atoi(argv[2]);
+		info.time_eat = ft_atoi(argv[3]);
+		info.time_sleep = ft_atoi(argv[4]);
 		init_philo(info);
 	}
 	else if (argc == 6)
 	{
 		info.phi_nbr = ft_atoi(argv[1]);
-		info.time_die = ft_atoi(argv[2]) * 1000;
-		info.time_eat = ft_atoi(argv[3]) * 1000;
-		info.time_sleep = ft_atoi(argv[4]) * 1000;
+		info.time_die = ft_atoi(argv[2]);
+		info.time_eat = ft_atoi(argv[3]);
+		info.time_sleep = ft_atoi(argv[4]);
 		info.max_eat = ft_atoi(argv[5]);
 		init_philo(info);
 	}

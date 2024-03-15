@@ -6,42 +6,40 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/14 14:36:42 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 14:45:37 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	ft_eat(t_philo **data)
+static int	ft_eat_n_sleep(t_philo **data)
 {
-	t_philo			*philo;
-	struct timeval	time;
+	t_philo	*philo;
 
 	philo = *data;
 	philo->time = get_time(philo);
 	if (print_log(EAT, &philo) == -1)
 		return (-1);
-	// gettimeofday(&time, NULL);
-	usleep(philo->info.time_eat - (time.tv_usec - philo->time));
-	philo->time = philo->time + philo->info.time_eat;
-	// gettimeofday(&time, NULL);
-	philo->last_eat = philo->time;
-	if (print_log(SLEEP, &philo) == -1)
-		return (-1);
+	usleep(philo->info->time_eat * 1000);
 	pthread_mutex_unlock(&philo->fork);
 	pthread_mutex_unlock(philo->fork_next);
 	philo->count_eat++;
-	usleep(philo->info.time_sleep - (time.tv_usec - philo->time));
+	philo->time = philo->time + (philo->info->time_eat);
+	philo->last_eat = philo->time;
+	if (print_log(SLEEP, &philo) == -1)
+		return (-1);
+	usleep(philo->info->time_sleep * 1000);
+	philo->time = philo->time + (philo->info->time_sleep);
+	// philo->time = get_time(philo);
 	return (0);
 }
 
 static int ft_fork(t_philo **data)
 {
 	t_philo			*philo;
-	struct timeval	time;
 
 	philo = *data;
-	if (philo->index % 2 == 0)
+	if (philo->index % 2 != 0 && philo->info->phi_nbr % 2 == 0)
 	{
 		pthread_mutex_lock(&philo->fork);
 		philo->time = get_time(philo);
@@ -69,23 +67,20 @@ static int ft_fork(t_philo **data)
 static void	*ft_think(t_philo **data)
 {
 	t_philo	*philo;
-	t_info	info;
-	struct timeval	time;
+	t_info	*info;
 
 	philo = *data;
 	info = philo->info;
-	while (1)
+	while (!philo->data->death && !philo->data->error)
 	{
-		gettimeofday(&time, NULL);
-		philo->time = time.tv_usec - philo->start_time;
 		if (print_log(THINK, &philo) == -1)
 			return (NULL);
 		if (ft_fork(&philo) == -1)
 			return (NULL);
-		if (ft_eat(&philo) == -1)
+		if (ft_eat_n_sleep(&philo) == -1)
 			return (NULL);
-		if (philo->count_eat <= info.max_eat
-			&& info.max_eat > 1)
+		if (philo->count_eat == info->max_eat
+			&& info->max_eat > 1)
 			return (NULL);
 	}
 	return (NULL);
@@ -96,13 +91,14 @@ static void	*routine(void *data)
 	t_philo	*philo;
 	t_info	info;
 	t_philo	*tmp;
-	struct timeval	time;
 
 	philo = (t_philo *)data;
 	while (!philo->data->start)
 		continue;
-	gettimeofday(&time, NULL);
-	philo->start_time = time.tv_usec;
+	if (philo->index % 2 == 0)
+		usleep(10);
+	philo->start_time = get_current_time();
+	philo->time = get_time(philo);
 	ft_think(&philo);
 	return (NULL);
 }
@@ -111,26 +107,25 @@ void	ft_philo(t_philo *philo)
 {
 	t_philo			*tmp;
 	size_t			i;
-	struct timeval	time;
+	int				start;
 
 	tmp = philo;
-	// gettimeofday(&time, NULL);
 	while (!tmp->thread)
 	{
-		// gettimeofday(&tmp->last_eat, NULL);
 		pthread_create(&tmp->thread, NULL, routine, tmp);
 		tmp = tmp->next;
 	}
-	philo->data->start = 1;
+	start = 1;
+	philo->data->start = &start;
 	tmp = philo;
 	i = 0;
-	while (i < philo->info.phi_nbr)
+	while (i < philo->info->phi_nbr)
 	{
 		pthread_join(tmp->thread, NULL);
 		tmp = tmp->next;
 		i++;
 	}
-	free(philo->data);
-	pthread_mutex_destroy(&philo->info.mutex);
+	// free(philo->data);
+	pthread_mutex_destroy(&philo->info->mutex);
 	free_lst(&philo);
 }

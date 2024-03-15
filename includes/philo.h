@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/14 13:41:28 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 14:43:41 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,42 +31,38 @@
 # define FORK			"%li %i has taken a fork\n"
 # define DEATH			"%li %i died\n"
 
-// # define TIME_OUT		time.tv_usec - philo->last_eat.tv_usec
-
 typedef struct s_data
 {
-	int			death;
-	int			start;
+	int			*death;
+	int			*start;
+	int			*error;
 }				t_data;
 
 typedef struct s_info
 {
 	size_t			max_eat;
 	size_t			phi_nbr;
-	long int		time_die;
-	long int		time_sleep;
-	long int		time_eat;
+	size_t		time_die;
+	size_t		time_sleep;
+	size_t		time_eat;
 	pthread_mutex_t	mutex;
 }					t_info;
 
 typedef struct s_philo
 {
 	int				index;
-	long int		time;
-	long int	start_time;
-	long int		last_eat;
+	size_t			time;
+	size_t			start_time;
+	size_t			last_eat;
 	int				print;
 	size_t			count_eat;
-	size_t			count_print;
 	struct s_philo	*prev;
 	struct s_philo	*next;
 	t_data			*data;
-	t_info			info;
+	t_info			*info;
 	pthread_t		thread;
-	pthread_mutex_t	phi_lock;
 	pthread_mutex_t	fork;
 	pthread_mutex_t	*fork_next;
-	// pthread_mutex_t	*print_lock;
 }					t_philo;
 
 int			ft_atoi(const char *nptr);
@@ -77,7 +73,7 @@ void		error_lst(t_philo **list, char *msg);
 void		ft_death(t_philo **list);
 void		philo_end(t_philo **list);
 int			print_log(char *msg, t_philo **data);
-long int	get_time(t_philo *philo);
-int			find_less(t_philo *philo);
+size_t		get_time(t_philo *philo);
+size_t		get_current_time(void);
 
 #endif
