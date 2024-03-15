@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 14:59:22 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 16:40:39 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,20 @@
 
 typedef struct s_data
 {
-	int			*death;
-	int			*start;
-	int			*error;
+	int				*death;
+	int				*start;
+	int				*error;
+	pthread_mutex_t	*lock_print;
+	pthread_mutex_t	*lock_start;
 }				t_data;
 
 typedef struct s_info
 {
-	size_t			max_eat;
-	size_t			phi_nbr;
-	size_t		time_die;
-	size_t		time_sleep;
-	size_t		time_eat;
-	pthread_mutex_t	mutex;
+	size_t	max_eat;
+	size_t	phi_nbr;
+	size_t	time_die;
+	size_t	time_sleep;
+	size_t	time_eat;
 }					t_info;
 
 typedef struct s_philo
@@ -61,8 +62,8 @@ typedef struct s_philo
 	t_data			*data;
 	t_info			info;
 	pthread_t		thread;
-	pthread_mutex_t	fork;
-	pthread_mutex_t	*fork_next;
+	pthread_mutex_t	*l_fork;
+	pthread_mutex_t	*r_fork;
 }					t_philo;
 
 int			ft_atoi(const char *nptr);

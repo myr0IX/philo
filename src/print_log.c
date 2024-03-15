@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 11:19:56 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 15:11:46 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 16:45:54 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	print_log(char *msg, t_philo **data)
 
 	philo = *data;
 	philo->print = 1;
-	pthread_mutex_lock(&philo->info.mutex);
+	pthread_mutex_lock(philo->data->lock_print);
 	life_time = (philo->time - philo->last_eat);
 	r = 0;
 	if (philo->data->death || philo->data->error)
@@ -46,7 +46,7 @@ int	print_log(char *msg, t_philo **data)
 	}
 	else
 		printf(msg, philo->time, philo->index);
-	pthread_mutex_unlock(&philo->info.mutex);
+	pthread_mutex_unlock(philo->data->lock_print);
 	philo->print = 0;
 	return (r);
 }

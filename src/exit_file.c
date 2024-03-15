@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 13:48:20 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 14:31:09 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 16:13:28 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	free_lst(t_philo **list)
 	{
 		tmp = *list;
 		*list = (*list)->next;
-		pthread_mutex_destroy(&tmp->fork);
+		pthread_mutex_destroy(tmp->r_fork);
 		memset(tmp, 0, (sizeof(t_philo)));
 		free(tmp);
 	}

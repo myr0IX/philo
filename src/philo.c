@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 15:12:31 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/15 16:45:23 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,16 @@ static int	ft_eat_n_sleep(t_philo **data)
 
 	philo = *data;
 	philo->time = get_time(philo);
-	if (print_log(EAT, &philo) == -1)
-		return (-1);
+	print_log(EAT, &philo) == -1;
 	usleep(philo->info.time_eat * 1000);
-	pthread_mutex_unlock(&philo->fork);
-	pthread_mutex_unlock(philo->fork_next);
+	pthread_mutex_unlock(philo->l_fork);
+	pthread_mutex_unlock(philo->r_fork);
 	philo->count_eat++;
 	philo->time = philo->time + (philo->info.time_eat);
 	philo->last_eat = philo->time;
-	if (print_log(SLEEP, &philo) == -1)
-		return (-1);
+	print_log(SLEEP, &philo);
 	usleep(philo->info.time_sleep * 1000);
 	philo->time = philo->time + (philo->info.time_sleep);
-	// philo->time = get_time(philo);
 	return (0);
 }
 
@@ -41,25 +38,21 @@ static int ft_fork(t_philo **data)
 	philo = *data;
 	if (philo->index % 2 != 0 && philo->info.phi_nbr % 2 == 0)
 	{
-		pthread_mutex_lock(&philo->fork);
+		pthread_mutex_lock(philo->l_fork);
 		philo->time = get_time(philo);
-		if (print_log(FORK, &philo) == -1)
-			return (-1);
-		pthread_mutex_lock(philo->fork_next);
+		print_log(FORK, &philo);
+		pthread_mutex_lock(philo->r_fork);
 		philo->time = get_time(philo);
-		if (print_log(FORK, &philo) == -1)
-			return (-1);
+		print_log(FORK, &philo);
 	}
 	else
 	{
-		pthread_mutex_lock(philo->fork_next);
+		pthread_mutex_lock(philo->r_fork);
 		philo->time = get_time(philo);
-		if (print_log(FORK, &philo) == -1)
-			return (-1);
-		pthread_mutex_lock(&philo->fork);
+		print_log(FORK, &philo);
+		pthread_mutex_lock(philo->l_fork);
 		philo->time = get_time(philo);
-		if (print_log(FORK, &philo) == -1)
-			return (-1);
+		print_log(FORK, &philo);
 	}
 	return (0);
 }
@@ -71,7 +64,8 @@ static void	*ft_think(t_philo **data)
 
 	philo = *data;
 	info = philo->info;
-	while (!philo->data->death && !philo->data->error)
+	while (!philo->data->death && !philo->data->error && (philo->count_eat < info.max_eat
+			&& info.max_eat > 1))
 	{
 		if (print_log(THINK, &philo) == -1)
 			return (NULL);
@@ -79,9 +73,9 @@ static void	*ft_think(t_philo **data)
 			return (NULL);
 		if (ft_eat_n_sleep(&philo) == -1)
 			return (NULL);
-		if (philo->count_eat == info.max_eat
-			&& info.max_eat > 1)
-			return (NULL);
+		// if (philo->count_eat == info.max_eat
+		// 	&& info.max_eat > 1)
+		// 	return (NULL);
 	}
 	return (NULL);
 }
@@ -115,8 +109,10 @@ void	ft_philo(t_philo *philo)
 		pthread_create(&tmp->thread, NULL, routine, tmp);
 		tmp = tmp->next;
 	}
+	pthread_mutex_lock(philo->data->lock_start);
 	start = 1;
 	philo->data->start = &start; // data race
+	pthread_mutex_unlock(philo->data->lock_start);
 	tmp = philo;
 	i = 0;
 	while (i < philo->info.phi_nbr)
@@ -125,7 +121,7 @@ void	ft_philo(t_philo *philo)
 		tmp = tmp->next;
 		i++;
 	}
-	// free(philo->data);
-	pthread_mutex_destroy(&philo->info.mutex);
+	pthread_mutex_destroy(philo->data->lock_print);
+	pthread_mutex_destroy(philo->data->lock_start);
 	free_lst(&philo);
 }
