@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 16:40:39 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/18 09:36:03 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@
 typedef struct s_data
 {
 	int				*death;
-	int				*start;
 	int				*error;
 	pthread_mutex_t	*lock_print;
 	pthread_mutex_t	*lock_start;
+	pthread_mutex_t	*lock_eat;
 }				t_data;
 
 typedef struct s_info

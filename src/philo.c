@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/15 16:45:23 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/18 09:50:34 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,11 @@ static int	ft_eat_n_sleep(t_philo **data)
 
 static int ft_fork(t_philo **data)
 {
-	t_philo			*philo;
+	t_philo	*philo;
 
 	philo = *data;
+	pthread_mutex_lock(philo->data->lock_eat);
+	pthread_mutex_unlock(philo->data->lock_eat);
 	if (philo->index % 2 != 0 && philo->info.phi_nbr % 2 == 0)
 	{
 		pthread_mutex_lock(philo->l_fork);
@@ -64,8 +66,8 @@ static void	*ft_think(t_philo **data)
 
 	philo = *data;
 	info = philo->info;
-	while (!philo->data->death && !philo->data->error && (philo->count_eat < info.max_eat
-			&& info.max_eat > 1))
+	while (!philo->data->death && !philo->data->error
+		&& (philo->count_eat < info.max_eat && info.max_eat > 1))
 	{
 		if (print_log(THINK, &philo) == -1)
 			return (NULL);
@@ -73,9 +75,6 @@ static void	*ft_think(t_philo **data)
 			return (NULL);
 		if (ft_eat_n_sleep(&philo) == -1)
 			return (NULL);
-		// if (philo->count_eat == info.max_eat
-		// 	&& info.max_eat > 1)
-		// 	return (NULL);
 	}
 	return (NULL);
 }
@@ -87,8 +86,8 @@ static void	*routine(void *data)
 	t_philo	*tmp;
 
 	philo = (t_philo *)data;
-	while (!philo->data->start)
-		continue;
+	pthread_mutex_lock(philo->data->lock_start);
+	pthread_mutex_unlock(philo->data->lock_start);
 	if (philo->index % 2 == 0)
 		usleep(10);
 	philo->start_time = get_current_time();
@@ -99,19 +98,17 @@ static void	*routine(void *data)
 
 void	ft_philo(t_philo *philo)
 {
-	t_philo			*tmp;
-	size_t			i;
-	int				start;
+	t_philo	*tmp;
+	size_t	i;
+	int		start;
 
 	tmp = philo;
+	pthread_mutex_lock(philo->data->lock_start);
 	while (!tmp->thread)
 	{
 		pthread_create(&tmp->thread, NULL, routine, tmp);
 		tmp = tmp->next;
 	}
-	pthread_mutex_lock(philo->data->lock_start);
-	start = 1;
-	philo->data->start = &start; // data race
 	pthread_mutex_unlock(philo->data->lock_start);
 	tmp = philo;
 	i = 0;
