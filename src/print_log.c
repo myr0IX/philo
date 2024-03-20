@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_log.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
+/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 11:19:56 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/19 17:27:59 by hznty            ###   ########.fr       */
+/*   Updated: 2024/03/20 10:09:40 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ void	print_log(char *msg, t_philo **data)
 	t_philo 		*philo;
 
 	philo = *data;
-	pthread_mutex_lock(philo->data->lock_print);
 	philo->life_time = (philo->time - philo->last_eat);
 	pthread_mutex_lock(philo->data->lock_data);
+	pthread_mutex_lock(philo->data->lock_print);
 	if (philo->data->death || philo->data->error)
 		philo->stop = 1;
 	else if (philo->life_time > philo->info.time_die)

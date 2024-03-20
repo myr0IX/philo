@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/14 09:49:52 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/20 09:46:52 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/20 10:17:06 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,16 @@ void	check_data(t_philo **data)
 	philo = *data;
 	philo->time = get_time(philo);
 	philo->life_time = (philo->time - philo->last_eat);
-	pthread_mutex_lock(philo->data->lock_data);
 	if (philo->life_time > philo->info.time_die)
 		print_log(NULL, data);
+	pthread_mutex_lock(philo->data->lock_data);
 	if (philo->data->death || philo->data->error || philo->time)
+	{
+		pthread_mutex_lock(philo->data->lock_eat);
+		philo->eat = 1;
+		pthread_mutex_unlock(philo->data->lock_eat);
 		philo->stop = 1;
+	}
 	pthread_mutex_unlock(philo->data->lock_data);
 }
 
@@ -56,8 +61,6 @@ void	take_lfork(t_philo **data)
 	while (1)
 	{
 		check_data(data);
-		if (philo->stop)
-			return ;
 		pthread_mutex_lock(philo->data->lock_eat);
 		if (!philo->prev->eat)
 		{
@@ -79,8 +82,8 @@ void	take_rfork(t_philo **data)
 	while (1)
 	{
 		check_data(data);
-		if (philo->stop)
-			return ;
+		// if (philo->stop)
+		// 	return ;
 		pthread_mutex_lock(philo->data->lock_eat);
 		if (!philo->next->eat)
 		{

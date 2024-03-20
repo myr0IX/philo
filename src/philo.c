@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/20 09:34:43 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/20 10:11:42 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ static int	ft_eat_n_sleep(t_philo **data)
 	usleep(philo->info.time_eat * 1000);
 	pthread_mutex_lock(philo->data->lock_eat);
 	philo->eat = 0;
-	pthread_mutex_unlock(philo->data->lock_eat);
 	printf("unlock fork");
 	pthread_mutex_unlock(philo->l_fork);
 	pthread_mutex_unlock(philo->r_fork);
+	pthread_mutex_unlock(philo->data->lock_eat);
 	philo->count_eat++;
 	philo->time = philo->time + (philo->info.time_eat);
 	philo->last_eat = philo->time;
@@ -51,7 +51,12 @@ static int ft_fork(t_philo **data)
 		take_lfork(data);
 	}
 	if (philo->stop)
+	{
+		
+		pthread_mutex_unlock(philo->l_fork);
+		pthread_mutex_unlock(philo->r_fork);
 		return (-1);
+	}
 	return (0);
 }
 
@@ -110,6 +115,7 @@ void	ft_philo(t_philo *philo)
 		tmp = tmp->next;
 		i++;
 	}
+	printf("end\n");
 	pthread_mutex_destroy(philo->data->lock_print);
 	pthread_mutex_destroy(philo->data->lock_start);
 	free_lst(&philo);
