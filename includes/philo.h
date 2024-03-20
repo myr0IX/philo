@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/18 09:36:03 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/19 17:27:22 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_data
 	pthread_mutex_t	*lock_print;
 	pthread_mutex_t	*lock_start;
 	pthread_mutex_t	*lock_eat;
+	pthread_mutex_t	*lock_data;
 }				t_data;
 
 typedef struct s_info
@@ -52,9 +53,12 @@ typedef struct s_info
 typedef struct s_philo
 {
 	int				index;
+	int				eat;
+	int				stop;
 	size_t			time;
 	size_t			start_time;
 	size_t			last_eat;
+	size_t			life_time;
 	int				print;
 	size_t			count_eat;
 	struct s_philo	*prev;
@@ -73,8 +77,14 @@ void		free_lst(t_philo **list);
 void		error_lst(t_philo **list, char *msg);
 void		ft_death(t_philo **list);
 void		philo_end(t_philo **list);
-int			print_log(char *msg, t_philo **data);
+void		print_log(char *msg, t_philo **data);
 size_t		get_time(t_philo *philo);
 size_t		get_current_time(void);
+
+void		check_eat(t_philo **data);
+void		check_data(t_philo **data);
+
+void		take_rfork(t_philo **data);
+void		take_lfork(t_philo **data);
 
 #endif

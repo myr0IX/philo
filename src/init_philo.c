@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_philo.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 11:01:18 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/18 09:36:51 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/19 17:31:20 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,16 +46,20 @@ static void	ft_lstadd_back(t_philo **lst, t_philo *new)
 	}
 }
 
-t_data	*init_data(t_data *data)
+t_data	*init_data(void)
 {
+	t_data	*data;
+
 	data = (t_data *)malloc(sizeof(t_data));
 	memset(data, 0, sizeof(t_data));
 	data->lock_print = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 	data->lock_start = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 	data->lock_eat = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+	data->lock_data = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(data->lock_print, NULL);
 	pthread_mutex_init(data->lock_start, NULL);
 	pthread_mutex_init(data->lock_eat, NULL);
+	pthread_mutex_init(data->lock_data, NULL);
 	return (data);
 }
 
@@ -68,7 +72,7 @@ void	init_philo(t_info info)
 
 	i = 1;
 	philo = NULL;
-	data = init_data(data);
+	data = init_data();
 	while (i <= info.phi_nbr)
 	{
 		tmp = new_philo(i++, info);
