@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
+/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/19 17:27:22 by hznty            ###   ########.fr       */
+/*   Updated: 2024/03/20 15:50:55 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@
 
 typedef struct s_data
 {
-	int				*death;
-	int				*error;
+	int				death;
+	int				error;
 	pthread_mutex_t	*lock_print;
 	pthread_mutex_t	*lock_start;
 	pthread_mutex_t	*lock_eat;
@@ -53,7 +53,7 @@ typedef struct s_info
 typedef struct s_philo
 {
 	int				index;
-	int				eat;
+	// int				eat;
 	int				stop;
 	size_t			time;
 	size_t			start_time;
@@ -79,12 +79,16 @@ void		ft_death(t_philo **list);
 void		philo_end(t_philo **list);
 void		print_log(char *msg, t_philo **data);
 size_t		get_time(t_philo *philo);
-size_t		get_current_time(void);
+size_t		get_current_time(t_philo **data);
 
-void		check_eat(t_philo **data);
 void		check_data(t_philo **data);
 
 void		take_rfork(t_philo **data);
 void		take_lfork(t_philo **data);
+
+void		mutex_lock(pthread_mutex_t *mutex, t_philo **data);
+void		mutex_unlock(pthread_mutex_t *mutex, t_philo **data);
+
+void		del_mutex(t_data *data);
 
 #endif
