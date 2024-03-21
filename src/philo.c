@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/20 15:51:07 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/21 16:25:54 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,21 @@ static int	ft_eat_n_sleep(t_philo **data)
 	philo->time = get_time(philo);
 	print_log(EAT, &philo);
 	usleep(philo->info.time_eat * 1000);
-	// mutex_lock(philo->data->lock_eat);
-	// philo->eat = 0;
-	// printf("unlock fork");
-	mutex_unlock(philo->l_fork, data);
-	mutex_unlock(philo->r_fork, data);
-	// mutex_unlock(philo->data->lock_eat);
+	set_bool(philo->l_fork);
+	set_bool(philo->r_fork);
 	philo->count_eat++;
 	philo->time = philo->time + (philo->info.time_eat);
 	philo->last_eat = philo->time;
+	while (philo->info.time_sleep > philo->info.time_die)
+	{
+		philo->time = get_time(philo);
+		philo->life_time = (philo->time - philo->last_eat);
+		if (philo->life_time > philo->info.time_die)
+		{
+			ft_death(data);
+			return (-1);
+		}
+	}
 	print_log(SLEEP, &philo);
 	usleep(philo->info.time_sleep * 1000);
 	philo->time = philo->time + (philo->info.time_sleep);
@@ -53,8 +59,10 @@ static int ft_fork(t_philo **data)
 	check_data(data);
 	if (philo->stop)
 	{
-		mutex_unlock(philo->l_fork, data);
-		mutex_unlock(philo->r_fork, data);
+		pthread_mutex_lock(&philo->r_fork->lock_fork);
+		philo->l_fork->fork = true;
+		philo->r_fork->fork = true;
+		pthread_mutex_unlock(&philo->r_fork->lock_fork);
 		return (-1);
 	}
 	return (0);
@@ -85,12 +93,12 @@ static void	*routine(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
-	mutex_lock(philo->data->lock_start, &philo);
-	mutex_unlock(philo->data->lock_start, &philo);
+	pthread_mutex_lock(&philo->data->lock_start);
+	pthread_mutex_unlock(&philo->data->lock_start);
 	philo->start_time = get_current_time(&philo);
 	philo->time = get_time(philo);
 	if (philo->index % 2 == 0)
-		usleep(philo->info.time_eat / 2 * 1000);
+		usleep((philo->info.time_eat / 2) * 1000);
 	ft_think(&philo);
 	return (NULL);
 }
@@ -101,13 +109,13 @@ void	ft_philo(t_philo *philo)
 	size_t	i;
 
 	tmp = philo;
-	mutex_lock(philo->data->lock_start, &philo);
+	pthread_mutex_lock(&philo->data->lock_start);
 	while (!tmp->thread)
 	{
 		pthread_create(&tmp->thread, NULL, routine, tmp);
 		tmp = tmp->next;
 	}
-	mutex_unlock(philo->data->lock_start, &philo);
+	pthread_mutex_unlock(&philo->data->lock_start);
 	tmp = philo;
 	i = 0;
 	while (i < philo->info.phi_nbr)

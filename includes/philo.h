@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/20 15:50:55 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/21 16:04:06 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <pthread.h>
+# include <stdbool.h>
 
 # define ARG_ERROR		"Bad arguments !\n"
 # define ARG_ERROR2		"./philo\tnumber_of_philosophers\t"
@@ -31,14 +32,20 @@
 # define FORK			"%li %i has taken a fork\n"
 # define DEATH			"%li %i died\n"
 
+typedef struct s_fork
+{
+	bool			fork;
+	pthread_mutex_t	lock_fork;
+}			t_fork;
+
 typedef struct s_data
 {
 	int				death;
 	int				error;
-	pthread_mutex_t	*lock_print;
-	pthread_mutex_t	*lock_start;
-	pthread_mutex_t	*lock_eat;
-	pthread_mutex_t	*lock_data;
+	pthread_mutex_t	lock_print;
+	pthread_mutex_t	lock_start;
+	pthread_mutex_t	lock_eat;
+	pthread_mutex_t	lock_data;
 }				t_data;
 
 typedef struct s_info
@@ -66,17 +73,14 @@ typedef struct s_philo
 	t_data			*data;
 	t_info			info;
 	pthread_t		thread;
-	pthread_mutex_t	*l_fork;
-	pthread_mutex_t	*r_fork;
+	t_fork			*l_fork;
+	t_fork			*r_fork;
 }					t_philo;
 
 int			ft_atoi(const char *nptr);
 void		init_philo(t_info infos);
 void		ft_philo(t_philo *philo);
-void		free_lst(t_philo **list);
-void		error_lst(t_philo **list, char *msg);
 void		ft_death(t_philo **list);
-void		philo_end(t_philo **list);
 void		print_log(char *msg, t_philo **data);
 size_t		get_time(t_philo *philo);
 size_t		get_current_time(t_philo **data);
@@ -85,10 +89,13 @@ void		check_data(t_philo **data);
 
 void		take_rfork(t_philo **data);
 void		take_lfork(t_philo **data);
+void		set_bool(t_fork *fork);
 
-void		mutex_lock(pthread_mutex_t *mutex, t_philo **data);
-void		mutex_unlock(pthread_mutex_t *mutex, t_philo **data);
-
-void		del_mutex(t_data *data);
+void		ft_free(void *data);
+void		free_lst(t_philo **list);
+void		error_lst(t_philo **list, char *msg);
+int			mutex_init(pthread_mutex_t mutex);
+t_data		*del_mutex(t_data *data);
+void		mutex_destroy(pthread_mutex_t *mutex);
 
 #endif

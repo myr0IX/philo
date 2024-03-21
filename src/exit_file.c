@@ -6,56 +6,55 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 13:48:20 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/20 16:15:20 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/21 16:08:11 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	del_mutex(t_data *data)
+void	ft_free(void *data)
 {
-	pthread_mutex_destroy(data->lock_print);
-	pthread_mutex_destroy(data->lock_start);
-	pthread_mutex_destroy(data->lock_eat);
-	pthread_mutex_destroy(data->lock_data);
-	free(data->lock_print);
-	free(data->lock_start);
-	free(data->lock_eat);
-	free(data->lock_data);
-	free(data);
+	if (data)
+		free(data);
 }
 
-void	free_lst(t_philo **list)
+t_data	*del_mutex(t_data *data)
+{
+	
+	mutex_destroy(&data->lock_print);
+	mutex_destroy(&data->lock_start);
+	mutex_destroy(&data->lock_eat);
+	mutex_destroy(&data->lock_data);
+	ft_free(data);
+	return (NULL);
+}
+
+void	free_lst(t_philo **data)
 {
 	t_philo	*tmp;
+	t_philo *philo;
 
-	(*list)->prev->next = NULL;
-	while ((*list)->next != NULL)
+	philo = *data;
+	philo->prev->next = NULL;
+	while (philo->next != NULL)
 	{
-		tmp = *list;
-		*list = (*list)->next;
-		pthread_mutex_destroy(tmp->r_fork);
-		free(tmp);
+		tmp = philo;
+		philo = philo->next;
+		mutex_destroy(&tmp->r_fork->lock_fork);
+		ft_free(tmp->r_fork);
+		ft_free(tmp);
 	}
-	pthread_mutex_destroy((*list)->r_fork);
-	free(*list);
+	ft_free(philo->r_fork);
+	ft_free(philo);
 }
 
-void	error_lst(t_philo **list, char *msg)
+void	error_lst(t_philo **data, char *msg)
 {
-	free_lst(list);
-	printf("%s\n", msg);
+	t_philo	*philo;
+
+	philo = *data;
+	(void)msg;
+	del_mutex(philo->data);
+	free_lst(data);
 	exit(EXIT_FAILURE);
-}
-
-void	philo_end(t_philo **list)
-{
-	t_philo	*tmp;
-
-	tmp = *list;
-	tmp = tmp->next;
-	tmp->prev = (*list)->prev;
-	(*list)->prev->next = tmp;
-	free(*list);
-	memset(*list, 0, sizeof(t_philo));
 }

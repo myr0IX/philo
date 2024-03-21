@@ -1,29 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mutex.c                                            :+:      :+:    :+:   */
+/*   set_bool.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/20 13:19:42 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/21 16:06:18 by macassag         ###   ########.fr       */
+/*   Created: 2024/03/21 13:15:09 by macassag          #+#    #+#             */
+/*   Updated: 2024/03/21 16:07:11 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	mutex_init(pthread_mutex_t mutex)
+void	set_bool(t_fork *fork)
 {
-	if (pthread_mutex_init(&mutex, NULL))
-	{
-		write(2, "pthread_mutex_init() error\n", 28);
-		return (-1);
-	}
-	return (0);
-}
+	// t_fork	*fork;
 
-void	mutex_destroy(pthread_mutex_t *mutex)
-{
-	if (mutex)
-		pthread_mutex_destroy(mutex);
+	// fork = *data;
+	pthread_mutex_lock(&fork->lock_fork);
+	if (fork->fork == false)
+		fork->fork = true;
+	else
+		fork->fork = false;
+	pthread_mutex_unlock(&fork->lock_fork);
 }

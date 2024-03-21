@@ -3,23 +3,31 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hznty <hznty@student.42.fr>                +#+  +:+       +#+         #
+#    By: macassag <macassag@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/28 08:54:43 by macassag          #+#    #+#              #
-#    Updated: 2024/03/19 16:04:50 by hznty            ###   ########.fr        #
+#    Updated: 2024/03/21 16:15:16 by macassag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
 
 # DFLAGS = -fsanitize=thread -pthread 
-CFLAGS = -pthread -fsanitize=thread -g3 -Wall -Wextra -Werror -I 
+CFLAGS = -pthread -g3 -Wall -Wextra -Werror -I 
 
 INCS		=	includes
 SRC_DIR		=	./src
 OBJ_DIR		=	.obj
 
-SRC 		=	exit_file.c  ft_atoi.c  init_philo.c  main.c  philo.c  print_log.c  utils.c
+SRC 		=	exit_file.c \
+				ft_atoi.c \
+				init_philo.c \
+				main.c \
+				mutex.c \
+				philo.c \
+				print_log.c \
+				set_bool.c \
+				utils.c
 
 OBJ			=	$(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
