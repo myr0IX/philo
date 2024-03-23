@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 11:01:18 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/22 10:57:50 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/23 14:45:09 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,17 @@ static t_philo	*new_philo(size_t index, t_info info)
 
 	new = (t_philo *)malloc(sizeof(t_philo));
 	fork = (t_fork *)malloc(sizeof(t_fork));
-	// fork->lock_fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 	if (!new || !fork)
 		return (NULL);
 	memset(new, 0, sizeof(t_philo));
 	memset(fork, 0, sizeof(t_fork));
 	new->index = index;
 	new->info = info;
+	new->stop = false;
 	fork->fork = true;
 	if (mutex_init(fork->lock_fork) == -1)
+		return (NULL);
+	if (mutex_init(new->mutex) == -1)
 		return (NULL);
 	new->r_fork = fork;
 	return (new);
@@ -56,10 +58,6 @@ t_data	*init_data(void)
 
 	data = (t_data *)malloc(sizeof(t_data));
 	memset(data, 0, sizeof(t_data));
-	// data->lock_print = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
-	// data->lock_start = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
-	// data->lock_eat = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
-	// data->lock_data = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 	if (mutex_init(data->lock_print) == -1)
 		return (del_mutex(data));
 	if (mutex_init(data->lock_start) == -1)
@@ -68,6 +66,7 @@ t_data	*init_data(void)
 		return (del_mutex(data));
 	if (mutex_init(data->lock_data) == -1)
 		return (del_mutex(data));
+	data->stop = false;
 	return (data);
 }
 

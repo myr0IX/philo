@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/23 08:26:27 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/23 15:27:06 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,21 @@
 # include <stdbool.h>
 
 # define ARG_ERROR		"Bad arguments !\n"
-# define ARG_ERROR2		"./philo\tnumber_of_philosophers\t"
-# define ARG_ERROR3		"time_to_die time_to_eat\ttime_to_sleep\t"
-# define ARG_ERROR4		"[number_of_times_each_philosopher_must_eat]\n"
+# define ARG_ERROR2		"\n./philo\t\tnumber_of_philosophers\t\t"
+# define ARG_ERROR3		"time_to_die\ttime_to_eat\ttime_to_sleep\t"
+# define ARG_ERROR4		"[number_of_times_each_philosopher_must_eat]\n\n"
 
 # define EAT			"%li %i is eating\n"
 # define THINK			"%li %i is thinking\n"
 # define SLEEP			"%li %i is sleeping\n"
 # define FORK			"%li %i has taken a fork\n"
 # define DEATH			"%li %i died\n"
+
+typedef enum e_time
+{
+	MICRO,
+	MILLI,
+}		t_time;
 
 typedef struct s_fork
 {
@@ -40,8 +46,7 @@ typedef struct s_fork
 
 typedef struct s_data
 {
-	int				death;
-	int				error;
+	bool			stop;
 	pthread_mutex_t	lock_print;
 	pthread_mutex_t	lock_start;
 	pthread_mutex_t	lock_eat;
@@ -60,8 +65,7 @@ typedef struct s_info
 typedef struct s_philo
 {
 	int				index;
-	// int				eat;
-	int				stop;
+	bool			stop;
 	size_t			time;
 	size_t			start_time;
 	size_t			last_eat;
@@ -73,6 +77,7 @@ typedef struct s_philo
 	t_data			*data;
 	t_info			info;
 	pthread_t		thread;
+	pthread_mutex_t	mutex;
 	t_fork			*l_fork;
 	t_fork			*r_fork;
 }					t_philo;
@@ -82,14 +87,18 @@ void		init_philo(t_info infos);
 void		ft_philo(t_philo *philo);
 void		ft_death(t_philo **list);
 void		print_log(char *msg, t_philo **data);
-size_t		get_time(t_philo *philo);
-size_t		get_current_time(void);
 
-void		check_data(t_philo **data);
+size_t		get_time(t_philo *philo);
+size_t		get_current_time(int flag);
+void		ft_usleep(size_t time, t_philo *philo);
+
+void		check_time(t_philo **data);
 
 void		take_rfork(t_philo **data);
 void		take_lfork(t_philo **data);
-void		set_bool(t_fork *fork);
+void		set_fork_bool(t_fork *fork);
+bool		get_bool(pthread_mutex_t *mutex, bool info);
+
 
 void		ft_free(void *data);
 void		free_lst(t_philo **list);
