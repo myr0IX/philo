@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/23 15:22:37 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/23 16:05:24 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static int	ft_eat_n_sleep(t_philo **data)
 	set_fork_bool(philo->r_fork);
 	print_log(SLEEP, &philo);
 	ft_usleep((philo->info.time_sleep * 1000), philo);
-	philo->time = philo->time + (philo->info.time_sleep);
+	// philo->time = philo->time + (philo->info.time_sleep);
 	return (0);
 }
 

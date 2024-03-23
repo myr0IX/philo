@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 14:05:16 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/23 15:52:16 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/23 16:36:48 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,16 +57,20 @@ void	ft_usleep(size_t time, t_philo *philo)
 	size_t	t;
 	size_t	s;
 
-	start = get_current_time(MICRO);
-	while (get_current_time(MICRO) - start < time)
+	start = get_current_time(MILLI);
+	while (get_current_time(MILLI) - start < time)
 	{
+		// printf("[%li]\n", get_current_time(MICRO) - start);
 		if (get_bool(&philo->mutex, philo->stop))
-		s = get_current_time(MICRO) - start;
-		t = time - s;
-		if (t > 10000)
-			usleep(t / 2);
-		else
-			while (get_current_time(MICRO) - start < time)
-				;
+			break;
+		usleep(500);
+		// if (get_bool(&philo->mutex, philo->stop))
+		// s = get_current_time(MICRO) - start;
+		// t = time - s;
+		// if (t > 10000)
+		// 	usleep(t / 2);
+		// else
+		// 	while (get_current_time(MICRO) - start < time)
+		// 		;
 	}
 }
