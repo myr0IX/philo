@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 11:01:18 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/21 16:04:37 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/22 10:57:50 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static t_philo	*new_philo(size_t index, t_info info)
 	if (!new || !fork)
 		return (NULL);
 	memset(new, 0, sizeof(t_philo));
+	memset(fork, 0, sizeof(t_fork));
 	new->index = index;
 	new->info = info;
 	fork->fork = true;

@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/21 16:04:06 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/23 08:26:27 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void		ft_philo(t_philo *philo);
 void		ft_death(t_philo **list);
 void		print_log(char *msg, t_philo **data);
 size_t		get_time(t_philo *philo);
-size_t		get_current_time(t_philo **data);
+size_t		get_current_time(void);
 
 void		check_data(t_philo **data);
 

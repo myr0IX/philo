@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/21 16:25:54 by macassag         ###   ########.fr       */
+/*   Updated: 2024/03/23 09:15:44 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static int	ft_eat_n_sleep(t_philo **data)
 
 	philo = *data;
 	philo->time = get_time(philo);
+	check_data(data);
 	print_log(EAT, &philo);
 	usleep(philo->info.time_eat * 1000);
 	set_bool(philo->l_fork);
@@ -35,6 +36,7 @@ static int	ft_eat_n_sleep(t_philo **data)
 			return (-1);
 		}
 	}
+	check_data(data);
 	print_log(SLEEP, &philo);
 	usleep(philo->info.time_sleep * 1000);
 	philo->time = philo->time + (philo->info.time_sleep);
@@ -77,7 +79,9 @@ static void	*ft_think(t_philo **data)
 	info = philo->info;
 	while (!philo->stop)
 	{
-		print_log(THINK, &philo);
+		check_data(data);
+		if (philo->count_eat != 0)
+			print_log(THINK, &philo);
 		if (ft_fork(&philo) == -1)
 			return (NULL);
 		if (ft_eat_n_sleep(&philo) == -1)
@@ -95,10 +99,10 @@ static void	*routine(void *data)
 	philo = (t_philo *)data;
 	pthread_mutex_lock(&philo->data->lock_start);
 	pthread_mutex_unlock(&philo->data->lock_start);
-	philo->start_time = get_current_time(&philo);
-	philo->time = get_time(philo);
+	philo->start_time = get_current_time();
 	if (philo->index % 2 == 0)
 		usleep((philo->info.time_eat / 2) * 1000);
+	philo->time = get_time(philo);
 	ft_think(&philo);
 	return (NULL);
 }
@@ -115,6 +119,9 @@ void	ft_philo(t_philo *philo)
 		pthread_create(&tmp->thread, NULL, routine, tmp);
 		tmp = tmp->next;
 	}
+	i = 1;
+	while (i <= philo->info.phi_nbr)
+		printf(THINK, 0L, (int)i++);
 	pthread_mutex_unlock(&philo->data->lock_start);
 	tmp = philo;
 	i = 0;
