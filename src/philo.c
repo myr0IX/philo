@@ -6,113 +6,119 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/23 16:05:24 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/03 13:06:10 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	ft_eat_n_sleep(t_philo **data)
+void	*routine(void *data)
 {
 	t_philo	*philo;
-
-	philo = *data;
-	// philo->time = get_time(philo);
-	print_log(EAT, &philo);
-	philo->last_eat = philo->time;
-	ft_usleep((philo->info.time_eat * 1000), philo);
-	philo->count_eat++;
-	// philo->time = philo->time + (philo->info.time_eat);
-
-	set_fork_bool(philo->l_fork);
-	set_fork_bool(philo->r_fork);
-	print_log(SLEEP, &philo);
-	ft_usleep((philo->info.time_sleep * 1000), philo);
-	// philo->time = philo->time + (philo->info.time_sleep);
-	return (0);
-}
-
-static int ft_fork(t_philo **data)
-{
-	t_philo	*philo;
-
-	philo = *data;
-	if (philo->index % 2 != 0 && philo->info.phi_nbr % 2 == 0)
+	
+	philo = data;
+	while (1)
 	{
-		take_lfork(data);
-		take_rfork(data);
-	}
-	else
-	{
-		take_rfork(data);
-		take_lfork(data);
-	}
-	check_time(data);
-	if (philo->stop)
-		return (-1);
-	return (0);
-}
-
-static void	*ft_think(t_philo **data)
-{
-	t_philo	*philo;
-	t_info	info;
-
-	philo = *data;
-	info = philo->info;
-	while (!philo->stop)
-	{
-		if (philo->count_eat != 0)
-			print_log(THINK, &philo);
-		if (ft_fork(&philo) == -1)
-			return (NULL);
-		if (ft_eat_n_sleep(&philo) == -1)
-			return (NULL);
-		if (philo->count_eat == info.max_eat && info.max_eat > 1)
+		pthread_mutex_lock(&philo->mutex);
+		if (philo->flag == RUN)
+		{
+			philo->flag = THINK;
+			pthread_mutex_unlock(&philo->mutex);
 			break;
+		}
+		pthread_mutex_unlock(&philo->mutex);
 	}
-	return (NULL);
+	while (1)
+	{
+		
+	}
+		
 }
 
-static void	*routine(void *data)
+void	wait_eat(t_philo *philo, size_t size)
 {
-	t_philo	*philo;
-
-	philo = (t_philo *)data;
-	pthread_mutex_lock(&philo->data->lock_start);
-	pthread_mutex_unlock(&philo->data->lock_start);
-	philo->start_time = get_current_time(MILLI);
-	if (philo->index % 2 == 0)
-		usleep((philo->info.time_eat / 2) * 1000);
-	// philo->time = get_time(philo);
-	ft_think(&philo);
-	return (NULL);
-}
-
-void	ft_philo(t_philo *philo)
-{
-	t_philo	*tmp;
+	t_philo	next;
+	t_philo	prev;
 	size_t	i;
 
-	tmp = philo;
-	pthread_mutex_lock(&philo->data->lock_start);
-	while (!tmp->thread)
-	{
-		pthread_create(&tmp->thread, NULL, routine, tmp);
-		tmp = tmp->next;
-	}
-	i = 1;
-	while (i <= philo->info.phi_nbr)
-		printf(THINK, 0L, (int)i++);
-	pthread_mutex_unlock(&philo->data->lock_start);
-	tmp = philo;
 	i = 0;
-	while (i < philo->info.phi_nbr)
+
+}
+
+int	check_death(t_philo *philo)
+{
+	static int	count;
+
+	pthread_mutex_lock(&philo->mutex);
+	if (philo->flag == STOP)
+		count++;
+	if (count == philo->info.phi_nbr - 1)
+		return (1);
+	if (get_time(*philo) - philo->last_eat >= philo->info.life_time)
 	{
-		pthread_join(tmp->thread, NULL);
-		tmp = tmp->next;
+		philo->flag = DEAD;
+		print_log(DEATH, &philo);
+		pthread_mutex_unlock(&philo->mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->mutex);
+	return (0);
+}
+
+void	*checker_phi(void *data)
+{
+	t_philo	*philo;
+	size_t	size;
+	size_t	i;
+	int	death;
+
+	philo = data;
+	size = philo->info.phi_nbr;
+	death = 0;
+	i = 0;
+	while (i < size)
+	{
+		pthread_mutex_lock(&philo[i].mutex);
+		philo[i].flag = RUN;
+		pthread_mutex_unlock(&philo[i++].mutex);
+	}
+	while (!death)
+	{
+		i = 0;
+		while (i < size)
+			death = check_death(&philo[i++]);
+	}
+	i = 0;
+	while (i < size)
+	{
+		pthread_mutex_lock(&philo[i].mutex);
+		philo[i].flag = STOP;
+		pthread_mutex_unlock(&philo[i++].mutex);
+	}
+	
+}
+
+void	ft_philo(t_philo *philo, size_t	size)
+{
+	size_t		i;
+	pthread_t	checker;
+
+	i = 0;
+	while (i < size)
+	{
+		pthread_create(&philo[i].thread, NULL, routine, &philo[i]);
 		i++;
 	}
-	del_mutex(philo->data);
-	free_lst(&philo);
+	while (i > 0)
+		printf(THINK, 0L, (int)i--);
+	pthread_create(&checker, NULL, checker_phi, philo);
+	while (i < size)
+	{
+		pthread_join(philo[i].thread, NULL);
+		i++;
+	}
+	pthread_join(checker, NULL);
+	while (i >= 0)
+		mutex_destroy(&philo[i].mutex);
+	free(philo);
 }

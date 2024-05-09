@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/23 14:03:22 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/03 13:03:09 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,34 @@ static int	parsing(char **argv)
 			return (printf(ARG_ERROR), -1);
 	}
 	return (0);
+}
+
+static void	init_philo(t_info info)
+{
+	t_philo	*philo;
+	size_t	i;
+
+	philo = NULL;
+	philo = (t_philo*) malloc(info.phi_nbr * sizeof(t_philo));
+	if (!philo)
+		return ;
+	memset(philo, 0, sizeof(t_philo));
+	i = 0;
+	while (i < info.phi_nbr)
+	{
+		if (mutex_init(philo[i].mutex) == -1)
+			return ;
+		if (i - 1 < 0)
+			philo[i].prev = philo[info.phi_nbr - 1];
+		else
+			philo[i].prev = philo[i - 1];
+		if (i + 1 == info.phi_nbr)
+			philo[i].next = philo[0];
+		else
+			philo[i].next = philo[i + 1];
+		philo[i++].info = info;
+	}
+	ft_philo(philo, info.phi_nbr);
 }
 
 int	main(int argc, char **argv)
