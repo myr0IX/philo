@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/17 11:44:21 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/17 17:36:27 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	eat_n_sleep(t_philo *phi)
 void	take_fork(t_philo *phi)
 {
 	int	count;
+	int		*ret;
 
 	count = 2;
 	while (count)
@@ -37,32 +38,39 @@ void	take_fork(t_philo *phi)
 			count--;
 		}
 	}
-	if (!get_value(&phi->mutex, phi->flag) >= STOP)
+	ret = get_value(&phi->mutex, &phi->flag);
+	if (*ret >= STOP)
 		eat_n_sleep(phi);
 }
 
 void	*routine(void *data)
 {
 	t_philo	*phi;
+	int		*ret;
 	
 	phi = (t_philo *) data;
 	while (1)
 	{
-		if (get_value(&phi->mutex, phi->flag) == RUN)
+		ret = get_value(&phi->mutex, &phi->flag);
+		if (*ret == RUN)
 			break ;
 	}
 	while (1)
 	{
 		print_log(THINKING, phi);
 		take_fork(phi);
-		if (get_value(&phi->mutex, phi->flag) >= STOP)
+		ret = get_value(&phi->mutex, &phi->flag);
+		if (*ret >= STOP)
 			break ;
 		if (phi->info.max_eat && phi->eat == phi->info.max_eat)
 			break ;
 	}
 	while (1)
-		if (get_value(&phi->mutex, phi->flag) == EXIT)
-			return ;
+	{
+		ret = get_value(&phi->mutex, &phi->flag);
+		if (*ret == EXIT)
+			return (NULL);
+	}
 }
 
 void	give_time(t_philo *phi, size_t size, t_time time)
@@ -81,12 +89,19 @@ void	give_time(t_philo *phi, size_t size, t_time time)
 void	stop_philo(t_philo *phi, size_t size)
 {
 	size_t	i;
+	int		*flag;
 
 	i = 0;
+	// *flag = 0;
 	while (i < size)
 	{
-		set_value(&phi[i].mutex, phi[i].flag, EXIT);
-		pthread_join(phi[i++].thread, NULL);
+		flag = (int *) get_value(&phi[i].mutex, &phi[i].flag);
+		if (*flag != EXIT)
+		{
+			set_value(&phi[i].mutex, &phi[i].flag, EXIT);
+			pthread_join(phi[i].thread, NULL);
+		}
+		i++;
 	}
 }
 
@@ -98,9 +113,11 @@ void	ft_philo(t_philo *phi, size_t size)
 	i = 0;
 	while (i < size)
 	{
-		pthread_create(phi[i].thread, NULL, routine, &phi[i]);
+		pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
 		i++;
 	}
 	time = get_current_time(MILLI);
 	give_time(phi, size, time);
+	monitor(phi, size);
+	stop_philo(phi, size);
 }

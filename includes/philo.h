@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/17 11:41:52 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/17 17:56:41 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 # include <pthread.h>
 # include <stdbool.h>
 
-# define ARG_ERROR		"Bad arguments !\n"
-# define ARG_ERROR2		"\n./philo\t\tnumber_of_philosophers\t\t"
-# define ARG_ERROR3		"time_to_die\ttime_to_eat\ttime_to_sleep\t"
-# define ARG_ERROR4		"[number_of_times_each_philosopher_must_eat]\n\n"
+# define ARG_ERROR		"Bad arguments !\n \
+\n./philo\tnumber_of_philosophers\t \
+time_to_die\ttime_to_eat\ttime_to_sleep\t \
+[number_of_times_each_philosopher_must_eat]\n\n"
 
 # define EATING			"%li %i is eating\n"
 # define THINKING		"%li %i is thinking\n"
@@ -36,11 +36,8 @@
 # define USE			1
 # define SYS_ERR		-1
 
-typedef enum e_time
-{
-	MICRO,
-	MILLI,
-}		t_time;
+# define MICRO 0
+# define MILLI 1
 
 typedef enum e_flag
 {
@@ -64,7 +61,7 @@ typedef struct s_info
 	size_t	time_eat;
 }					t_info;
 
-typedef ssize_t t_time;
+typedef ssize_t	t_time;
 
 typedef struct s_mutex
 {
@@ -78,7 +75,7 @@ typedef struct s_philo
 	int				flag;
 	t_time			start_time;
 	t_time			last_eat;
-	size_t				eat;
+	size_t			eat;
 	size_t			max_eat;
 	pthread_t		thread;
 	pthread_mutex_t	mutex;
@@ -90,7 +87,6 @@ typedef struct s_philo
 
 typedef struct s_table
 {
-	t_philo	*philo;
 	size_t	size;
 	size_t	life_time;
 	int		flag;
@@ -98,7 +94,7 @@ typedef struct s_table
 
 /*	MUTEX FONCTIONS	*/
 
-int		mutex_init(pthread_mutex_t mutex);
+int		mutex_init(pthread_mutex_t *mutex);
 void	mutex_destroy(pthread_mutex_t *mutex);
 
 /*check if fork is available*/
@@ -107,23 +103,20 @@ int		check_value(t_mutex *structure);
 /*set fork->use to UNUSED*/
 void	unset_value(t_mutex *structure);
 void	set_value(pthread_mutex_t *mutex, int *var, int value);
-int		get_value(pthread_mutex_t *mutex, int var);
+void	*get_value(pthread_mutex_t *mutex, void *var);
 
 /*	UTILS FONCTIONS	*/
 
 int		ft_atoi(const char *nptr);
 void	ft_free(void *data);
 t_time	get_time(t_philo *philo);
-size_t	get_current_time(int flag);
+t_time	get_current_time(int flag);
 void	ft_usleep(size_t time, t_philo *philo);
 
 /*	THREAD FONCTIONS	*/
-void	init_philo(t_info infos);
 void	ft_philo(t_philo *philo, size_t	size);
 void	print_log(char *msg, t_philo *philo);
 
-
-void	check_time(t_philo **data);
-
+void	monitor(t_philo *phi, size_t size);
 
 #endif

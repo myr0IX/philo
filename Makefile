@@ -6,7 +6,7 @@
 #    By: macassag <macassag@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/28 08:54:43 by macassag          #+#    #+#              #
-#    Updated: 2024/03/21 16:15:16 by macassag         ###   ########.fr        #
+#    Updated: 2024/05/17 17:23:40 by macassag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,15 +19,8 @@ INCS		=	includes
 SRC_DIR		=	./src
 OBJ_DIR		=	.obj
 
-SRC 		=	exit_file.c \
-				ft_atoi.c \
-				init_philo.c \
-				main.c \
-				mutex.c \
-				philo.c \
-				print_log.c \
-				set_bool.c \
-				utils.c
+SRC 		=	bool.c  ft_atoi.c  main.c  monitor.c  mutex.c \
+				philo.c  print_log.c  time.c  utils.c
 
 OBJ			=	$(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 

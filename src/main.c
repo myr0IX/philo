@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/03 13:03:09 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/17 17:56:57 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,29 +38,44 @@ static int	parsing(char **argv)
 	return (0);
 }
 
+t_mutex	*create_mutex(void)
+{
+	t_mutex	*mutex;
+
+	mutex = (t_mutex *) malloc(sizeof(t_mutex));
+	if (!mutex)
+		return (NULL);
+	memset(mutex, 0, sizeof(t_mutex));
+	if (mutex_init(&mutex->mutex) == -1)
+		return (NULL);
+	return (mutex);
+}
+
 static void	init_philo(t_info info)
 {
 	t_philo	*philo;
 	size_t	i;
+	t_mutex	*print;
 
 	philo = NULL;
 	philo = (t_philo*) malloc(info.phi_nbr * sizeof(t_philo));
-	if (!philo)
+	print = create_mutex();
+	if (!philo || !print)
 		return ;
 	memset(philo, 0, sizeof(t_philo));
 	i = 0;
 	while (i < info.phi_nbr)
 	{
-		if (mutex_init(philo[i].mutex) == -1)
-			return ;
-		if (i - 1 < 0)
-			philo[i].prev = philo[info.phi_nbr - 1];
-		else
-			philo[i].prev = philo[i - 1];
+		if (mutex_init(&philo[i].mutex) == -1)
+			return ; // error_struct(philo, i);
 		if (i + 1 == info.phi_nbr)
-			philo[i].next = philo[0];
+			philo[i].next_fork = philo[0].fork;
 		else
-			philo[i].next = philo[i + 1];
+			philo[i].next_fork = philo[i + 1].fork;
+		philo[i].fork = create_mutex();
+		if (!philo[i].fork)
+			return ; // error_struct(philo, i);
+		philo[i].print = print;
 		philo[i++].info = info;
 	}
 	ft_philo(philo, info.phi_nbr);
@@ -76,7 +91,7 @@ int	main(int argc, char **argv)
 	if (argc == 5)
 	{
 		info.phi_nbr = ft_atoi(argv[1]);
-		info.time_die = ft_atoi(argv[2]);
+		info.life_time = ft_atoi(argv[2]);
 		info.time_eat = ft_atoi(argv[3]);
 		info.time_sleep = ft_atoi(argv[4]);
 		init_philo(info);
@@ -84,13 +99,13 @@ int	main(int argc, char **argv)
 	else if (argc == 6)
 	{
 		info.phi_nbr = ft_atoi(argv[1]);
-		info.time_die = ft_atoi(argv[2]);
+		info.life_time = ft_atoi(argv[2]);
 		info.time_eat = ft_atoi(argv[3]);
 		info.time_sleep = ft_atoi(argv[4]);
 		info.max_eat = ft_atoi(argv[5]);
 		init_philo(info);
 	}
 	else
-		printf("%s%s%s%s", ARG_ERROR, ARG_ERROR2, ARG_ERROR3, ARG_ERROR4);
+		printf("%s", ARG_ERROR);
 	return (0);
 }

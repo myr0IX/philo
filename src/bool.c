@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 13:15:09 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/17 11:24:58 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/17 16:29:41 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ void	unset_value(t_mutex *structure)
 	pthread_mutex_unlock(&structure->mutex);
 }
 
-int		get_value(pthread_mutex_t *mutex, int var)
+void	*get_value(pthread_mutex_t *mutex, void *var)
 {
-	int	ret;
+	void	*ret;
 
 	pthread_mutex_lock(mutex);
 	ret = var;

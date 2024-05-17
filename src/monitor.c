@@ -6,68 +6,51 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 08:35:54 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/17 09:17:15 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/17 17:30:13 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_death(t_philo *philo)
+static int	check_death(t_philo *phi, t_info info)
 {
-	static int	count;
+	t_time	time;
+	t_time	*result;
 
-	pthread_mutex_lock(&philo->mutex);
-	if (philo->flag == STOP)
-		count++;
-	if (count == philo->info.phi_nbr - 1)
-		return (1);
-	if (get_time(*philo) - philo->last_eat >= philo->info.life_time)
+	time = get_time(phi);
+	if (time == SYS_ERR)
+		return (SYS_ERR);
+	result = (t_time *) get_value(&phi->mutex, &phi->last_eat) + \
+		(t_time) info.life_time;
+	if (*result > time)
 	{
-		philo->flag = DEAD;
-		print_log(DEATH, &philo);
-		pthread_mutex_unlock(&philo->mutex);
+		set_value(&phi->mutex, &phi->flag, DEAD);
+		print_log(DEATH, phi);
 		return (1);
 	}
-	pthread_mutex_unlock(&philo->mutex);
 	return (0);
 }
 
-void	monitor(void *data)
+void	monitor(t_philo *phi, size_t size)
 {
-	t_table	table;
-	
-	
-}
-
-void	*checker_phi(void *data)
-{
-	t_philo	*philo;
-	size_t	size;
 	size_t	i;
-	int	death;
+	int		*flag;
 
-	philo = data;
-	size = philo->info.phi_nbr;
-	death = 0;
-	i = 0;
-	while (i < size)
-	{
-		pthread_mutex_lock(&philo[i].mutex);
-		philo[i].flag = RUN;
-		pthread_mutex_unlock(&philo[i++].mutex);
-	}
-	while (!death)
+	flag = 0;
+	while (1)
 	{
 		i = 0;
 		while (i < size)
-			death = check_death(&philo[i++]);
+		{
+			if (check_death(&phi[i], phi->info))
+				return ;
+			flag = (int *) get_value(&phi[i].mutex, &phi[i].flag);
+			if (*flag == STOP)
+			{
+				set_value(&phi[i].mutex, &phi[i].flag, EXIT);
+				pthread_join(phi[i].thread, NULL);
+			}
+			i++;
+		}
 	}
-	i = 0;
-	while (i < size)
-	{
-		pthread_mutex_lock(&philo[i].mutex);
-		philo[i].flag = STOP;
-		pthread_mutex_unlock(&philo[i++].mutex);
-	}
-	
 }
