@@ -6,31 +6,47 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 13:15:09 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/23 14:09:42 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:24:58 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	set_fork_bool(t_fork *fork)
+int	check_value(t_mutex *structure)
 {
-	// t_fork	*fork;
+	int	ret;
 
-	// fork = *data;
-	pthread_mutex_lock(&(fork->lock_fork));
-	if (fork->fork == false)
-		fork->fork = true;
-	else
-		fork->fork = false;
-	pthread_mutex_unlock(&(fork->lock_fork));
+	ret = 0;
+	pthread_mutex_lock(&structure->mutex);
+	if (structure->use == UNUSED)
+	{
+		structure->use = USE;
+		ret = 1;
+	}
+	pthread_mutex_unlock(&structure->mutex);
+	return (ret);
 }
 
-bool	get_bool(pthread_mutex_t *mutex, bool info)
+void	unset_value(t_mutex *structure)
 {
-	bool	r;
+	pthread_mutex_lock(&structure->mutex);
+	structure->use = UNUSED;
+	pthread_mutex_unlock(&structure->mutex);
+}
+
+int		get_value(pthread_mutex_t *mutex, int var)
+{
+	int	ret;
 
 	pthread_mutex_lock(mutex);
-	r = info;
+	ret = var;
 	pthread_mutex_unlock(mutex);
-	return (r);
+	return (ret);
+}
+
+void	set_value(pthread_mutex_t *mutex, int *var, int value)
+{
+	pthread_mutex_lock(mutex);
+	*var = value;
+	pthread_mutex_unlock(mutex);
 }
