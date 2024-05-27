@@ -1,36 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   debug.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/04 13:48:20 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/19 12:14:10 by macassag         ###   ########.fr       */
+/*   Created: 2024/05/19 12:15:01 by macassag          #+#    #+#             */
+/*   Updated: 2024/05/19 13:55:26 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_free(void *data)
+void	test_mutex(t_mutex *mutex)
 {
-	if (data)
-		free(data);
+	pthread_mutex_lock(&mutex->mutex);
+	pthread_mutex_unlock(&mutex->mutex);
+	printf("mutex ok\n");
 }
 
-void	free_struct(t_philo *phi, size_t size)
+void	printf_mutex(t_philo *phi, size_t size)
 {
 	size_t	i;
 
 	i = 0;
-	mutex_destroy(&phi->print->mutex);
-	ft_free(phi->print);
 	while (i < size)
 	{
-		mutex_destroy(&phi[i].fork->mutex);
-		mutex_destroy(&phi[i].mutex);
-		ft_free(phi[i].fork);
+		printf("philo %zu : address fork = \t%p\n", i + 1, phi[i].fork);
+		printf("philo %zu : address fork next = \t%p\n", i + 1, phi[i].next_fork);
 		i++;
 	}
-	ft_free(phi);
 }

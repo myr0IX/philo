@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/17 17:36:27 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/20 11:04:34 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,61 +14,100 @@
 
 void	eat_n_sleep(t_philo *phi)
 {
+	t_time	time;
+	int		ret;
+	
+	print_log(EATING, phi);
 	ft_usleep(phi->info.time_eat, phi);
 	phi->eat++;
-	if (get_time(phi) == SYS_ERR)
+	time = get_time(phi);
+	if (time == SYS_ERR)
+	{
+		set_value(&phi->mutex, &phi->flag, ERROR);
 		return ;
-	unset_value(phi->fork);
-	unset_value(phi->next_fork);
-	ft_usleep(phi->info.time_sleep, phi);
+	}
+	set_time(&phi->fork->mutex, &phi->last_eat, time);
+	ret = get_int(&phi->mutex, &phi->flag);
+	if (ret < STOP)
+		print_log(SLEEPING, phi);
+	set_value(&phi->fork->mutex, &phi->fork->use, UNUSED);
+	set_value(&phi->next_fork->mutex, &phi->next_fork->use, UNUSED);
+	if (ret < STOP)
+		ft_usleep(phi->info.time_sleep, phi);
 }
 
 void	take_fork(t_philo *phi)
 {
 	int	count;
-	int		*ret;
+	int	ret;
 
 	count = 2;
 	while (count)
 	{
-		if (check_value(phi->fork) == UNUSED
-			|| check_value(phi->next_fork) == UNUSED)
+		if (check_value(phi->fork) == 1)
+		{
+			print_log(FORK, phi);
+			count--;
+		}
+		if (check_value(phi->next_fork) == 1)
 		{
 			print_log(FORK, phi);
 			count--;
 		}
 	}
-	ret = get_value(&phi->mutex, &phi->flag);
-	if (*ret >= STOP)
+	ret = get_int(&phi->mutex, &phi->flag);
+	if (ret < STOP)
 		eat_n_sleep(phi);
+	else
+	{
+		set_value(&phi->fork->mutex, &phi->fork->use, UNUSED);
+		set_value(&phi->next_fork->mutex, &phi->next_fork->use, UNUSED);
+	}
+}
+
+void	wait_start()
+{
+	while (1)
+	{
+		ret = get_int(&phi->mutex, &phi->flag);
+		if (ret == RUN)
+			break ;
+	}
 }
 
 void	*routine(void *data)
 {
 	t_philo	*phi;
-	int		*ret;
+	int		ret;
 	
 	phi = (t_philo *) data;
+	ret = 0;
 	while (1)
 	{
-		ret = get_value(&phi->mutex, &phi->flag);
-		if (*ret == RUN)
+		ret = get_int(&phi->mutex, &phi->flag);
+		if (ret == RUN)
 			break ;
 	}
+	print_log(THINKING, phi);
+	if (phi->index % 2 == 0)
+		usleep(phi->info.time_eat / 2);
 	while (1)
 	{
-		print_log(THINKING, phi);
+		if (phi->eat)
+			print_log(THINKING, phi);
 		take_fork(phi);
-		ret = get_value(&phi->mutex, &phi->flag);
-		if (*ret >= STOP)
+		ret = get_int(&phi->mutex, &phi->flag);
+		if (ret >= STOP)
 			break ;
 		if (phi->info.max_eat && phi->eat == phi->info.max_eat)
 			break ;
 	}
+	// printf("exit\n");
+	set_value(&phi->fork->mutex, &phi->flag, STOP);
 	while (1)
 	{
-		ret = get_value(&phi->mutex, &phi->flag);
-		if (*ret == EXIT)
+		ret = get_int(&phi->mutex, &phi->flag);
+		if (ret == EXIT)
 			return (NULL);
 	}
 }
@@ -82,25 +121,6 @@ void	give_time(t_philo *phi, size_t size, t_time time)
 	{
 		phi[i].start_time = time;
 		set_value(&phi[i].mutex, &phi[i].flag, RUN);
-		i++;
-	}
-}
-
-void	stop_philo(t_philo *phi, size_t size)
-{
-	size_t	i;
-	int		*flag;
-
-	i = 0;
-	// *flag = 0;
-	while (i < size)
-	{
-		flag = (int *) get_value(&phi[i].mutex, &phi[i].flag);
-		if (*flag != EXIT)
-		{
-			set_value(&phi[i].mutex, &phi[i].flag, EXIT);
-			pthread_join(phi[i].thread, NULL);
-		}
 		i++;
 	}
 }
@@ -119,5 +139,5 @@ void	ft_philo(t_philo *phi, size_t size)
 	time = get_current_time(MILLI);
 	give_time(phi, size, time);
 	monitor(phi, size);
-	stop_philo(phi, size);
+	free_struct(phi, phi->info.phi_nbr);
 }

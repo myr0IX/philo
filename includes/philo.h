@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/17 17:56:41 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/19 16:19:28 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,6 @@ typedef enum e_flag
 {
 	PAUSE,
 	RUN,
-	EAT,
-	SLEEP,
-	THINK,
 	STOP,
 	DEAD,
 	ERROR,
@@ -101,22 +98,33 @@ void	mutex_destroy(pthread_mutex_t *mutex);
 int		check_value(t_mutex *structure);
 
 /*set fork->use to UNUSED*/
-void	unset_value(t_mutex *structure);
+void	set_time(pthread_mutex_t *mutex, t_time *var, t_time value);
 void	set_value(pthread_mutex_t *mutex, int *var, int value);
 void	*get_value(pthread_mutex_t *mutex, void *var);
+int		get_int(pthread_mutex_t *mutex, void *var);
+t_time	get_time_value(pthread_mutex_t *mutex, void *var);
 
 /*	UTILS FONCTIONS	*/
 
 int		ft_atoi(const char *nptr);
-void	ft_free(void *data);
 t_time	get_time(t_philo *philo);
 t_time	get_current_time(int flag);
 void	ft_usleep(size_t time, t_philo *philo);
+
+/*	FREE FONCTIONS	*/
+
+void	ft_free(void *data);
+void	free_struct(t_philo *phi, size_t size);
 
 /*	THREAD FONCTIONS	*/
 void	ft_philo(t_philo *philo, size_t	size);
 void	print_log(char *msg, t_philo *philo);
 
 void	monitor(t_philo *phi, size_t size);
+
+/*	DEBUG	*/
+
+void	test_mutex(t_mutex *mutex);
+void	printf_mutex(t_philo *phi, size_t size);
 
 #endif

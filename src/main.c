@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/17 17:56:57 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/19 16:11:11 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,18 +66,22 @@ static void	init_philo(t_info info)
 	i = 0;
 	while (i < info.phi_nbr)
 	{
-		if (mutex_init(&philo[i].mutex) == -1)
-			return ; // error_struct(philo, i);
+		philo[i].fork = create_mutex();
+		if (mutex_init(&philo[i].mutex) == -1 || !philo[i].fork)
+		{
+			free_struct(philo, i + 1);
+			return ;
+		}
 		if (i + 1 == info.phi_nbr)
 			philo[i].next_fork = philo[0].fork;
-		else
-			philo[i].next_fork = philo[i + 1].fork;
-		philo[i].fork = create_mutex();
-		if (!philo[i].fork)
-			return ; // error_struct(philo, i);
+		if (i != 0)
+			philo[i - 1].next_fork = philo[i].fork;
 		philo[i].print = print;
+		philo[i].index = i + 1;
 		philo[i++].info = info;
 	}
+	// printf_mutex(philo, info.phi_nbr);
+	// free_struct(philo, info.phi_nbr);
 	ft_philo(philo, info.phi_nbr);
 }
 
