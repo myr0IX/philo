@@ -6,11 +6,24 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 08:35:54 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/19 16:33:07 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/28 10:03:09 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	give_time(t_philo *phi, size_t size, t_time time)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < size)
+	{
+		phi[i].start_time = time;
+		set_value(&phi[i].mutex, &phi[i].flag, RUN);
+		i++;
+	}
+}
 
 void	stop_philo(t_philo *phi, size_t size)
 {

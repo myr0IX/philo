@@ -6,14 +6,14 @@
 #    By: macassag <macassag@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/28 08:54:43 by macassag          #+#    #+#              #
-#    Updated: 2024/05/19 12:17:18 by macassag         ###   ########.fr        #
+#    Updated: 2024/05/28 10:05:10 by macassag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
 
 # DFLAGS = -fsanitize=thread -pthread 
-CFLAGS = -pthread -g3 -Wall -Wextra -Werror -I 
+CFLAGS = -pthread -fsanitize=thread -g3 -Wall -Wextra -Werror -I 
 
 INCS		=	includes
 SRC_DIR		=	./src

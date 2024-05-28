@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/20 11:04:34 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/28 10:08:33 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,11 @@ void	take_fork(t_philo *phi)
 	}
 }
 
-void	wait_start()
+void	wait_start(t_philo *phi)
 {
+	int		ret;
+
+	ret = 0;
 	while (1)
 	{
 		ret = get_int(&phi->mutex, &phi->flag);
@@ -82,12 +85,7 @@ void	*routine(void *data)
 	
 	phi = (t_philo *) data;
 	ret = 0;
-	while (1)
-	{
-		ret = get_int(&phi->mutex, &phi->flag);
-		if (ret == RUN)
-			break ;
-	}
+	wait_start(phi);
 	print_log(THINKING, phi);
 	if (phi->index % 2 == 0)
 		usleep(phi->info.time_eat / 2);
@@ -112,18 +110,6 @@ void	*routine(void *data)
 	}
 }
 
-void	give_time(t_philo *phi, size_t size, t_time time)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < size)
-	{
-		phi[i].start_time = time;
-		set_value(&phi[i].mutex, &phi[i].flag, RUN);
-		i++;
-	}
-}
 
 void	ft_philo(t_philo *phi, size_t size)
 {
