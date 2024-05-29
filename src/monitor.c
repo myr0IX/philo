@@ -6,74 +6,59 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 08:35:54 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 14:03:57 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 15:37:21 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	give_time(t_philo *phi, size_t size, t_time time)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < size)
-	{
-		set_value(phi[i].start_time, time);
-		set_value(phi[i].last_eat, time);
-		// set_value(phi[i].flag, RUN);
-		usleep(200);
-		i++;
-	}
-	i = 0;
-	while (i < size)
-	{
-		set_value(phi[i].flag, RUN);
-		i++;
-	}
-}
-
-void	stop_philo(t_philo *phi, size_t size)
-{
-	size_t	i;
-	// int		flag;
-
-	i = 0;
-	while (i < size)
-	{
-		set_value(phi[i].flag, STOP);
-		usleep(200);
-		i++;
-	}
-}
-
-void	exit_child(t_philo *phi, size_t size)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < size)
-	{
-		set_value(phi[i].flag, EXIT);
-		pthread_join(phi[i].thread, NULL);
-		i++;
-	}
-}
-
-static int	check_death(t_philo *phi, t_info info)
+static int	if_death(t_philo *phi, t_info info)
 {
 	t_time	time;
 	t_time	result;
 
 	time = 0;
 	result = 0;
-	time = get_time(phi);
+	time = get_time(phi, 0);
 	if (time == SYS_ERR)
 		return (SYS_ERR);
 	result = get_value(phi->last_eat) + (t_time) info.life_time;
+	// printf("reslut %ld\n", result);
 	if (result < time)
-		return (1);
+		return (DEAD);
 	return (0);
+}
+
+int	death(t_mutex *mutex, int set)
+{
+	static int	dead;
+	int			ret;
+
+	pthread_mutex_lock(&mutex->mutex);
+	if (set)
+		dead = 1;
+	ret = dead;
+	pthread_mutex_unlock(&mutex->mutex);
+	return (ret);
+}
+
+void	*check_death(void *data)
+{
+	t_philo	*phi;
+
+	phi = (t_philo *)data;
+	while (1)
+	{
+		if (get_value(phi->flag) == STOP)
+			return (NULL);
+		if (if_death(phi, phi->info))
+		{
+			print_log(DEATH, phi);
+			set_value(phi->flag, DEAD);
+			death(phi->print, 1);
+			return (NULL);
+		}
+	}
 }
 
 void	monitor(t_philo *phi, size_t size)
@@ -84,15 +69,20 @@ void	monitor(t_philo *phi, size_t size)
 
 	flag = 0;
 	count = size;
-	while (count)
+	while (1)
 	{
 		i = 0;
-		while (i < size)
+		while (count)
 		{
-			if (check_death(&phi[i], phi->info))
+			if (get_value(phi[i].flag) == STOP)
+			{
+				count--;
+				set_value(phi[i].flag, EXIT);
+				pthread_join(phi[i].thread, NULL);
+			}
+			if (death(phi[i].print, 0))
 			{
 				stop_philo(phi, size);	
-				print_log(DEATH, &phi[i]);
 				exit_child(phi, size);
 				return ;
 			}

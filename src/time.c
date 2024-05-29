@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 14:05:16 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 13:01:31 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 15:33:48 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@ t_time	get_current_time(int flag)
 	return (0);
 }
 
-t_time	get_time(t_philo *philo)
+t_time	get_time(t_philo *philo, t_time given_time)
 {
-	t_time	time;
-	t_time	start_time;
+	t_time			time;
+	static t_time	start_time;
 
 	time = get_current_time(MILLI);
 	if (time < 0)
@@ -39,7 +39,11 @@ t_time	get_time(t_philo *philo)
 		set_value(philo->flag, ERROR);
 		return (SYS_ERR);
 	}
-	start_time = get_value(philo->start_time);
+	if (given_time != 0)
+	{
+		printf("change time\n");
+		start_time = given_time;
+	}
 	return (time - start_time);
 }
 

@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 13:37:09 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 13:00:00 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,10 @@ typedef struct s_philo
 {
 	int				index;
 	pthread_t		thread;
+	pthread_t		check_death;
 	size_t			eat;
 	size_t			max_eat;
-	t_mutex			*start_time;
+	// t_mutex			*start_time;
 	t_mutex			*last_eat;
 	t_mutex			*mutex;
 	t_mutex			*flag;
@@ -93,12 +94,7 @@ typedef struct s_table
 
 int		mutex_init(pthread_mutex_t mutex);
 void	mutex_destroy(pthread_mutex_t *mutex);
-
-/*check if fork is available*/
 int		check_value(t_mutex *structure);
-
-/*set fork->use to UNUSED*/
-int	check_value(t_mutex *structure);
 t_time	get_value(t_mutex *mutex);
 void	set_value(t_mutex *mutex, t_time value);
 
@@ -108,10 +104,12 @@ void	set_value(t_mutex *mutex, t_time value);
 
 size_t	ft_strlen(char *str);
 int		ft_atoi(const char *nptr);
-t_time	get_time(t_philo *philo);
+t_time	get_time(t_philo *philo, t_time given_time);
 t_time	get_current_time(int flag);
 void	ft_usleep(size_t time, t_philo *philo);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+void	stop_philo(t_philo *phi, size_t size);
+void	exit_child(t_philo *phi, size_t size);
 
 /*	FREE FONCTIONS	*/
 
@@ -121,8 +119,8 @@ void	free_struct(t_philo *phi, size_t size);
 /*	THREAD FONCTIONS	*/
 void	ft_philo(t_philo *philo, size_t	size);
 void	print_log(char *msg, t_philo *philo);
-
-void	give_time(t_philo *phi, size_t size, t_time time);
+void	*check_death(void *data);
+t_time	run_philo(t_mutex *mutex,t_time start_time);
 void	monitor(t_philo *phi, size_t size);
 
 /*	DEBUG	*/

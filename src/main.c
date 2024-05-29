@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 13:03:08 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 13:00:45 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,11 @@ int	init_mutex(t_philo *philo, t_mutex *print, t_info info)
 	philo->fork = create_mutex();
 	philo->mutex = create_mutex();
 	philo->flag = create_mutex();
-	philo->start_time = create_mutex();
+	// philo->start_time = create_mutex();
 	philo->last_eat = create_mutex();
-	if (!philo->mutex || !philo->fork || !philo->flag
-		|| !philo->start_time || !philo->last_eat)
-		return (1);
+	// if (!philo->mutex || !philo->fork || !philo->flag
+	// 	|| !philo->start_time || !philo->last_eat)
+	// 	return (1);
 	return (0);
 }
 
