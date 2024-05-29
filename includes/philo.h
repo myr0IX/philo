@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 13:00:00 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 16:10:36 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ time_to_die\ttime_to_eat\ttime_to_sleep\t \
 
 typedef enum e_flag
 {
-	PAUSE,
 	RUN,
 	STOP,
 	DEAD,

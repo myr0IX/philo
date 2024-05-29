@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 11:19:56 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 15:39:19 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 16:05:34 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@ void	print_log(char *msg, t_philo *philo)
 	if (time != SYS_ERR && death != 1)
 		printf(msg, time, philo->index);
 	if (ft_strncmp(msg, DEATH, ft_strlen(msg)) == 0)
+	{
 		death = 1;
+		usleep(200);
+	}
 	pthread_mutex_unlock(&philo->print->mutex);
 }

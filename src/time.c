@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 14:05:16 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 15:33:48 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 16:30:48 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,7 @@ t_time	get_time(t_philo *philo, t_time given_time)
 		return (SYS_ERR);
 	}
 	if (given_time != 0)
-	{
-		printf("change time\n");
 		start_time = given_time;
-	}
 	return (time - start_time);
 }
 
@@ -59,14 +56,8 @@ void	ft_usleep(size_t time, t_philo *philo)
 	}
 	while (get_current_time(MILLI) - start < (t_time) time)
 	{
-		
-		pthread_mutex_lock(&philo->flag->mutex);
-		if (philo->flag->value == DEAD || philo->flag->value == STOP)
-		{
-			pthread_mutex_unlock(&philo->flag->mutex);
+		if (get_value(philo->flag) >= STOP)
 			break ;
-		}
-		pthread_mutex_unlock(&philo->flag->mutex);
 		usleep(500);
 	}
 	// sleep(1);

@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 15:35:47 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/29 16:25:05 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,25 +49,18 @@ void	take_fork(t_philo *phi)
 			print_log(FORK, phi);
 			count--;
 		}
-		usleep(100);
+		usleep(500);
 	}
 	eat_n_sleep(phi);
 }
 
 void	wait_start(t_philo *phi)
 {
-	int		ret;
-
-	(void)phi;
-	ret = 0;
 	pthread_create(&phi->check_death, NULL, check_death, phi);
 	pthread_detach(phi->check_death);
 	while (1)
-	{
-		ret = get_value(phi->flag);
-		if (ret >= STOP)
+		if (run_philo(phi->print, 0))
 			break ;
-	}
 }
 
 void	*routine(void *data)
@@ -77,28 +70,56 @@ void	*routine(void *data)
 	
 	phi = (t_philo *) data;
 	wait_start(phi);
-	return (NULL);
-	if (phi->index % 2 == 0)
-		usleep(phi->info.time_eat / 2);
-	while (1)
+	while (get_value(phi->flag) < STOP)
 	{
 		if (phi->eat)
 			print_log(THINKING, phi);
 		take_fork(phi);
-		ret = get_value(phi->flag);
-		if (ret >= STOP)
-			break ;
 		if (phi->info.max_eat && phi->eat == phi->info.max_eat)
+		{
 			break ;
+		}
 	}
 	set_value(phi->flag, STOP);
 	while (1)
 	{
 		ret = get_value(phi->flag);
 		if (ret == EXIT)
+		{
+			printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 			return (NULL);
+		}
 		usleep(50);
 	}
+}
+
+void	run_thread(t_philo *phi, size_t size)
+{
+	size_t	i;
+
+	i = 0;
+	if (size % 2 == 0)
+	{
+		while (i < size)
+		{
+			pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
+			i = i + 2;
+		}
+		usleep(200);
+		i = 1;
+		while (i < size)
+		{
+			pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
+			i = i + 2;
+		}
+	}
+	else
+		while (i < size)
+		{
+			pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
+			usleep(100);
+			i++;
+		}
 }
 
 void	ft_philo(t_philo *phi, size_t size)
@@ -106,24 +127,25 @@ void	ft_philo(t_philo *phi, size_t size)
 	size_t	i;
 	t_time	time;
 
-	i = 0;
 	time = get_current_time(MILLI);
 	if (time < 0)
 		return ;
 	get_time(phi, time);
-	// printf("time to time = %zu\n", time);
+	i = 0;
+	run_thread(phi, size);
 	while (i < size)
 	{
-		// phi[i].last_eat->value = time;
 		pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
-		i++;
+		i = i + 2;
 	}
-	printf("time to threading philo = %zu\n", get_time(phi, 0));
-	// stop_philo(phi, size);
-	while (1)
-		;
-	exit_child(phi, size);
-	return ;
+	usleep(200);
+	i = 1;
+	while (i < size)
+	{
+		pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
+		i = i + 2;
+	}
+	// printf("time to threading philo = %zu\n", get_time(phi, 0));
 	run_philo(phi->print, time);
 	monitor(phi, size);
 	free_struct(phi, phi->info.phi_nbr);
