@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 10:08:33 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/28 14:19:43 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void	eat_n_sleep(t_philo *phi)
 {
 	t_time	time;
-	int		ret;
 	
 	print_log(EATING, phi);
 	ft_usleep(phi->info.time_eat, phi);
@@ -23,17 +22,14 @@ void	eat_n_sleep(t_philo *phi)
 	time = get_time(phi);
 	if (time == SYS_ERR)
 	{
-		set_value(&phi->mutex, &phi->flag, ERROR);
+		set_value(phi->flag, ERROR);
 		return ;
 	}
-	set_time(&phi->fork->mutex, &phi->last_eat, time);
-	ret = get_int(&phi->mutex, &phi->flag);
-	if (ret < STOP)
-		print_log(SLEEPING, phi);
-	set_value(&phi->fork->mutex, &phi->fork->use, UNUSED);
-	set_value(&phi->next_fork->mutex, &phi->next_fork->use, UNUSED);
-	if (ret < STOP)
-		ft_usleep(phi->info.time_sleep, phi);
+	set_value(phi->last_eat, time);
+	print_log(SLEEPING, phi);
+	set_value(phi->fork, UNUSED);
+	set_value(phi->next_fork, UNUSED);
+	ft_usleep(phi->info.time_sleep, phi);
 }
 
 void	take_fork(t_philo *phi)
@@ -55,24 +51,26 @@ void	take_fork(t_philo *phi)
 			count--;
 		}
 	}
-	ret = get_int(&phi->mutex, &phi->flag);
+	ret = get_value(phi->flag);
 	if (ret < STOP)
 		eat_n_sleep(phi);
 	else
 	{
-		set_value(&phi->fork->mutex, &phi->fork->use, UNUSED);
-		set_value(&phi->next_fork->mutex, &phi->next_fork->use, UNUSED);
+		set_value(phi->fork, UNUSED);
+		set_value(phi->next_fork, UNUSED);
 	}
 }
+
 
 void	wait_start(t_philo *phi)
 {
 	int		ret;
 
+	// printf("phi %i\n", phi->index);
 	ret = 0;
 	while (1)
 	{
-		ret = get_int(&phi->mutex, &phi->flag);
+		ret = get_value(phi->flag);
 		if (ret == RUN)
 			break ;
 	}
@@ -81,12 +79,12 @@ void	wait_start(t_philo *phi)
 void	*routine(void *data)
 {
 	t_philo	*phi;
-	int		ret;
+	t_time		ret;
 	
 	phi = (t_philo *) data;
 	ret = 0;
-	wait_start(phi);
-	print_log(THINKING, phi);
+	// wait_start(phi);
+	// print_log(THINKING, phi);
 	if (phi->index % 2 == 0)
 		usleep(phi->info.time_eat / 2);
 	while (1)
@@ -94,22 +92,25 @@ void	*routine(void *data)
 		if (phi->eat)
 			print_log(THINKING, phi);
 		take_fork(phi);
-		ret = get_int(&phi->mutex, &phi->flag);
+		ret = get_value(phi->flag);
 		if (ret >= STOP)
 			break ;
 		if (phi->info.max_eat && phi->eat == phi->info.max_eat)
 			break ;
 	}
 	// printf("exit\n");
-	set_value(&phi->fork->mutex, &phi->flag, STOP);
+	if (get_value(phi->flag) >= DEAD)
+		return (NULL);
+	set_value(phi->flag, STOP);
 	while (1)
 	{
-		ret = get_int(&phi->mutex, &phi->flag);
+		ret = get_value(phi->flag);
+		// printf("ret = %zu\n", ret);
 		if (ret == EXIT)
 			return (NULL);
+		usleep(500);
 	}
 }
-
 
 void	ft_philo(t_philo *phi, size_t size)
 {
@@ -117,13 +118,27 @@ void	ft_philo(t_philo *phi, size_t size)
 	t_time	time;
 
 	i = 0;
+	time = get_current_time(MILLI);
+	if (time < 0)
+		return ;
 	while (i < size)
 	{
+		phi[i].start_time->value = time;
+		phi[i].last_eat->value = time;
+		print_log(THINKING, &phi[i]);
 		pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
-		i++;
+		i += 2;
 	}
-	time = get_current_time(MILLI);
-	give_time(phi, size, time);
+	i = 1;
+	while (i < size)
+	{
+		phi[i].start_time->value = time;
+		phi[i].last_eat->value = time;
+		print_log(THINKING, &phi[i]);
+		pthread_create(&phi[i].thread, NULL, routine, &phi[i]);
+		i += 2;
+	}
+	// give_time(phi, size, time);
 	monitor(phi, size);
 	free_struct(phi, phi->info.phi_nbr);
 }

@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 14:05:16 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/19 15:21:21 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/28 13:01:31 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,17 @@ t_time	get_current_time(int flag)
 
 t_time	get_time(t_philo *philo)
 {
-	size_t	time;
+	t_time	time;
+	t_time	start_time;
 
 	time = get_current_time(MILLI);
 	if (time < 0)
 	{
-		set_value(&philo->mutex, &philo->flag, ERROR);
+		set_value(philo->flag, ERROR);
 		return (SYS_ERR);
 	}
-	return (time - philo->start_time);
+	start_time = get_value(philo->start_time);
+	return (time - start_time);
 }
 
 void	ft_usleep(size_t time, t_philo *philo)
@@ -48,19 +50,19 @@ void	ft_usleep(size_t time, t_philo *philo)
 	start = get_current_time(MILLI);
 	if (start < 0)
 	{
-		set_value(&philo->mutex, &philo->flag, ERROR);
+		set_value(philo->flag, ERROR);
 		return ;
 	}
 	while (get_current_time(MILLI) - start < (t_time) time)
 	{
 		
-		pthread_mutex_lock(&philo->mutex);
-		if (philo->flag == DEAD || philo->flag == STOP)
+		pthread_mutex_lock(&philo->flag->mutex);
+		if (philo->flag->value == DEAD || philo->flag->value == STOP)
 		{
-			pthread_mutex_unlock(&philo->mutex);
+			pthread_mutex_unlock(&philo->flag->mutex);
 			break ;
 		}
-		pthread_mutex_unlock(&philo->mutex);
+		pthread_mutex_unlock(&philo->flag->mutex);
 		usleep(500);
 	}
 	// sleep(1);

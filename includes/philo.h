@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 09:35:17 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/28 13:37:09 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,19 +63,19 @@ typedef ssize_t	t_time;
 typedef struct s_mutex
 {
 	pthread_mutex_t	mutex;
-	int				use;
+	t_time			value;
 }	t_mutex;
 
 typedef struct s_philo
 {
 	int				index;
-	int				flag;
-	t_time			start_time;
-	t_time			last_eat;
+	pthread_t		thread;
 	size_t			eat;
 	size_t			max_eat;
-	pthread_t		thread;
-	pthread_mutex_t	mutex;
+	t_mutex			*start_time;
+	t_mutex			*last_eat;
+	t_mutex			*mutex;
+	t_mutex			*flag;
 	t_mutex			*print;
 	t_mutex			*fork;
 	t_mutex			*next_fork;
@@ -91,25 +91,27 @@ typedef struct s_table
 
 /*	MUTEX FONCTIONS	*/
 
-int		mutex_init(pthread_mutex_t *mutex);
+int		mutex_init(pthread_mutex_t mutex);
 void	mutex_destroy(pthread_mutex_t *mutex);
 
 /*check if fork is available*/
 int		check_value(t_mutex *structure);
 
 /*set fork->use to UNUSED*/
-void	set_time(pthread_mutex_t *mutex, t_time *var, t_time value);
-void	set_value(pthread_mutex_t *mutex, int *var, int value);
-void	*get_value(pthread_mutex_t *mutex, void *var);
-int		get_int(pthread_mutex_t *mutex, void *var);
-t_time	get_time_value(pthread_mutex_t *mutex, void *var);
+int	check_value(t_mutex *structure);
+t_time	get_value(t_mutex *mutex);
+void	set_value(t_mutex *mutex, t_time value);
+
+
 
 /*	UTILS FONCTIONS	*/
 
+size_t	ft_strlen(char *str);
 int		ft_atoi(const char *nptr);
 t_time	get_time(t_philo *philo);
 t_time	get_current_time(int flag);
 void	ft_usleep(size_t time, t_philo *philo);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 /*	FREE FONCTIONS	*/
 
@@ -127,5 +129,6 @@ void	monitor(t_philo *phi, size_t size);
 
 void	test_mutex(t_mutex *mutex);
 void	printf_mutex(t_philo *phi, size_t size);
+void	printf_thread(t_philo *phi, size_t size);
 
 #endif

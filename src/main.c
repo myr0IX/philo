@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/19 16:11:11 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/28 13:03:08 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,24 @@ t_mutex	*create_mutex(void)
 	if (!mutex)
 		return (NULL);
 	memset(mutex, 0, sizeof(t_mutex));
-	if (mutex_init(&mutex->mutex) == -1)
+	if (mutex_init(mutex->mutex) == -1)
 		return (NULL);
 	return (mutex);
+}
+
+int	init_mutex(t_philo *philo, t_mutex *print, t_info info)
+{
+	philo->print = print;
+	philo->info = info;
+	philo->fork = create_mutex();
+	philo->mutex = create_mutex();
+	philo->flag = create_mutex();
+	philo->start_time = create_mutex();
+	philo->last_eat = create_mutex();
+	if (!philo->mutex || !philo->fork || !philo->flag
+		|| !philo->start_time || !philo->last_eat)
+		return (1);
+	return (0);
 }
 
 static void	init_philo(t_info info)
@@ -66,8 +81,7 @@ static void	init_philo(t_info info)
 	i = 0;
 	while (i < info.phi_nbr)
 	{
-		philo[i].fork = create_mutex();
-		if (mutex_init(&philo[i].mutex) == -1 || !philo[i].fork)
+		if (init_mutex(&philo[i], print, info))
 		{
 			free_struct(philo, i + 1);
 			return ;
@@ -76,9 +90,8 @@ static void	init_philo(t_info info)
 			philo[i].next_fork = philo[0].fork;
 		if (i != 0)
 			philo[i - 1].next_fork = philo[i].fork;
-		philo[i].print = print;
 		philo[i].index = i + 1;
-		philo[i++].info = info;
+		i++;
 	}
 	// printf_mutex(philo, info.phi_nbr);
 	// free_struct(philo, info.phi_nbr);

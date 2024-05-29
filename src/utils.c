@@ -6,7 +6,7 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 13:48:20 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/19 12:14:10 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/28 13:36:52 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,42 @@ void	free_struct(t_philo *phi, size_t size)
 	while (i < size)
 	{
 		mutex_destroy(&phi[i].fork->mutex);
-		mutex_destroy(&phi[i].mutex);
+		mutex_destroy(&phi[i].mutex->mutex);
 		ft_free(phi[i].fork);
+		ft_free(phi[i].mutex);
 		i++;
 	}
 	ft_free(phi);
+}
+
+size_t	ft_strlen(char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t			i;
+	unsigned char	*str1;
+	unsigned char	*str2;
+
+	i = 0;
+	str1 = (unsigned char *)s1;
+	str2 = (unsigned char *)s2;
+	if (!s1)
+		return (-1);
+	while (str1[i] && str2[i] && i < n)
+	{
+		if (str1[i] != str2[i])
+			return (str1[i] - str2[i]);
+		i++;
+	}
+	if (str1[i] != str2[i] && i < n)
+		return (str1[i] - str2[i]);
+	return (0);
 }
