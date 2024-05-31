@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 14:05:16 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 16:30:48 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/31 10:43:10 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,5 +60,4 @@ void	ft_usleep(size_t time, t_philo *philo)
 			break ;
 		usleep(500);
 	}
-	// sleep(1);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 13:48:20 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 13:36:52 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/31 11:19:57 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,14 @@ void	free_struct(t_philo *phi, size_t size)
 	ft_free(phi->print);
 	while (i < size)
 	{
-		mutex_destroy(&phi[i].fork->mutex);
+		mutex_destroy(&phi[i].last_eat->mutex);
 		mutex_destroy(&phi[i].mutex->mutex);
-		ft_free(phi[i].fork);
+		mutex_destroy(&phi[i].flag->mutex);
+		mutex_destroy(&phi[i].fork->mutex);
+		ft_free(phi[i].last_eat);
 		ft_free(phi[i].mutex);
+		ft_free(phi[i].flag);
+		ft_free(phi[i].fork);
 		i++;
 	}
 	ft_free(phi);

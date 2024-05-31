@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 10:58:00 by macassag          #+#    #+#             */
-/*   Updated: 2024/03/04 12:48:51 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/31 11:13:58 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,13 @@ static int	skip_white_space(const char *nptr)
 	return (i);
 }
 
-int	ft_atoi(const char *nptr)
+long long	ft_atoll(const char *nptr)
 {
-	long	result;
-	size_t	i;
-	int		neg;
+	long long	result;
+	size_t		i;
+	int			neg;
 
+	
 	result = 0;
 	neg = 1;
 	i = skip_white_space(nptr);

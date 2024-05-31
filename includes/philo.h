@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 16:10:36 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/31 11:08:08 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,8 @@ void	set_value(t_mutex *mutex, t_time value);
 /*	UTILS FONCTIONS	*/
 
 size_t	ft_strlen(char *str);
-int		ft_atoi(const char *nptr);
+long long	ft_atoll(const char *nptr);
+// int		ft_atoi(const char *nptr);
 t_time	get_time(t_philo *philo, t_time given_time);
 t_time	get_current_time(int flag);
 void	ft_usleep(size_t time, t_philo *philo);
@@ -124,6 +125,7 @@ void	monitor(t_philo *phi, size_t size);
 
 /*	DEBUG	*/
 
+# define DEBUG "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n"
 void	test_mutex(t_mutex *mutex);
 void	printf_mutex(t_philo *phi, size_t size);
 void	printf_thread(t_philo *phi, size_t size);

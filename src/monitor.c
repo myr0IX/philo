@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 08:35:54 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 16:07:03 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/31 10:30:38 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,31 +63,25 @@ void	*check_death(void *data)
 void	monitor(t_philo *phi, size_t size)
 {
 	size_t	i;
-	t_time	flag;
 	size_t	count;
 
-	flag = 0;
 	count = size;
 	while (count)
 	{
 		i = 0;
 		while (i < size && count)
 		{
-			// printf("flag value = %zd\n", get_value(phi[i].flag));
 			if (death(phi[i].print, 0))
 			{
-				set_value(phi[i].flag, STOP);
-				usleep(100);
+				stop_philo(phi, size);
+				return ;
 			}
 			if (get_value(phi[i].flag) == STOP)
 			{
 				count--;
 				set_value(phi[i].flag, EXIT);
-				pthread_join(phi[i].thread, NULL);
-				// printf("count = %zd\n", count);
 			}
 			i++;
 		}
 	}
-	stop_philo(phi, size);
 }

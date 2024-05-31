@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 16:04:23 by macassag         ###   ########.fr       */
+/*   Updated: 2024/05/31 11:16:13 by hznty            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ static int	parsing(char **argv)
 		while (argv[j][i])
 			if (ft_isdigit(argv[j][i++]) == -1)
 				return (printf(ARG_ERROR), -1);
-		if (ft_atoi(argv[j]) > INT_MAX || ft_atoi(argv[j]) < INT_MIN)
-			return (printf(ARG_ERROR), -1);
+		if (ft_atoll(argv[j]) > INT_MAX || ft_atoll(argv[j]) < 0)
+			return (printf(ARG_ERROR), 1);
 	}
 	return (0);
 }
@@ -65,33 +65,31 @@ int	init_mutex(t_philo *philo, t_mutex *print, t_info info)
 	return (0);
 }
 
-static void	init_philo(t_info info)
+static int	init_philo(t_info info)
 {
 	t_philo	*philo;
-	size_t	i;
+	long	i;
 	t_mutex	*print;
 
+	if (!info.life_time|| !info.time_eat || !info.time_sleep || !info.phi_nbr)
+		return (printf(ARG_ERROR), 1);
 	philo = (t_philo*) malloc(info.phi_nbr * sizeof(t_philo));
 	print = create_mutex();
 	if (!philo || !print)
-		return ;
+		return (1);
 	memset(philo, 0, sizeof(t_philo));
-	i = 0;
-	while (i < info.phi_nbr)
+	i = -1;
+	while (++i < (long) info.phi_nbr)
 	{
 		if (init_mutex(&philo[i], print, info))
-		{
-			free_struct(philo, i + 1);
-			return ;
-		}
-		if (i + 1 == info.phi_nbr)
+			return (free_struct(philo, i + 1), 1);
+		if (i + 1 == (long) info.phi_nbr)
 			philo[i].next_fork = philo[0].fork;
 		if (i != 0)
 			philo[i - 1].next_fork = philo[i].fork;
 		philo[i].index = i + 1;
-		i++;
 	}
-	ft_philo(philo, info.phi_nbr);
+	return (ft_philo(philo, info.phi_nbr), 0);
 }
 
 int	main(int argc, char **argv)
@@ -99,23 +97,23 @@ int	main(int argc, char **argv)
 	t_info	info;
 
 	memset(&info, 0, sizeof(t_info));
-	if (parsing(argv) == -1)
-		return (0);
+	if (parsing(argv))
+		return (1);
 	if (argc == 5)
 	{
-		info.phi_nbr = ft_atoi(argv[1]);
-		info.life_time = ft_atoi(argv[2]);
-		info.time_eat = ft_atoi(argv[3]);
-		info.time_sleep = ft_atoi(argv[4]);
+		info.phi_nbr = ft_atoll(argv[1]);
+		info.life_time = ft_atoll(argv[2]);
+		info.time_eat = ft_atoll(argv[3]);
+		info.time_sleep = ft_atoll(argv[4]);
 		init_philo(info);
 	}
 	else if (argc == 6)
 	{
-		info.phi_nbr = ft_atoi(argv[1]);
-		info.life_time = ft_atoi(argv[2]);
-		info.time_eat = ft_atoi(argv[3]);
-		info.time_sleep = ft_atoi(argv[4]);
-		info.max_eat = ft_atoi(argv[5]);
+		info.phi_nbr = ft_atoll(argv[1]);
+		info.life_time = ft_atoll(argv[2]);
+		info.time_eat = ft_atoll(argv[3]);
+		info.time_sleep = ft_atoll(argv[4]);
+		info.max_eat = ft_atoll(argv[5]);
 		init_philo(info);
 	}
 	else
