@@ -1,15 +1,13 @@
 CC = cc
 
-# DFLAGS = -fsanitize=thread -pthread 
-CFLAGS = -pthread -g3 -Wall -fsanitize=thread -Wextra -Werror -I 
+CFLAGS = -pthread -g3 -Wall -Wextra -Werror -I 
 
 INCS		=	includes
 SRC_DIR		=	./src
 OBJ_DIR		=	.obj
 
 SRC 		=	bool.c  ft_atoi.c  main.c  monitor.c  mutex.c \
-				philo.c  print_log.c  time.c  utils.c	debug.c \
-				utils2.c
+				philo.c  print_log.c  time.c  utils.c	utils2.c
 
 OBJ			=	$(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
