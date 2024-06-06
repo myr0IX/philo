@@ -6,11 +6,24 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 13:19:42 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/28 10:27:02 by macassag         ###   ########.fr       */
+/*   Updated: 2024/06/05 13:52:48 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+t_mutex	*create_mutex(void)
+{
+	t_mutex	*mutex;
+
+	mutex = (t_mutex *) malloc(sizeof(t_mutex));
+	if (!mutex)
+		return (NULL);
+	memset(mutex, 0, sizeof(t_mutex));
+	if (mutex_init(mutex->mutex) == -1)
+		return (NULL);
+	return (mutex);
+}
 
 int	mutex_init(pthread_mutex_t mutex)
 {

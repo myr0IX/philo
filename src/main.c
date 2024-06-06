@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
+/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 09:02:59 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/31 11:16:13 by hznty            ###   ########.fr       */
+/*   Updated: 2024/06/05 13:52:56 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,6 @@ static int	parsing(char **argv)
 	return (0);
 }
 
-t_mutex	*create_mutex(void)
-{
-	t_mutex	*mutex;
-
-	mutex = (t_mutex *) malloc(sizeof(t_mutex));
-	if (!mutex)
-		return (NULL);
-	memset(mutex, 0, sizeof(t_mutex));
-	if (mutex_init(mutex->mutex) == -1)
-		return (NULL);
-	return (mutex);
-}
-
 int	init_mutex(t_philo *philo, t_mutex *print, t_info info)
 {
 	philo->print = print;
@@ -71,9 +58,9 @@ static int	init_philo(t_info info)
 	long	i;
 	t_mutex	*print;
 
-	if (!info.life_time|| !info.time_eat || !info.time_sleep || !info.phi_nbr)
+	if (!info.life_time || !info.time_eat || !info.time_sleep || !info.phi_nbr)
 		return (printf(ARG_ERROR), 1);
-	philo = (t_philo*) malloc(info.phi_nbr * sizeof(t_philo));
+	philo = (t_philo *) malloc(info.phi_nbr * sizeof(t_philo));
 	print = create_mutex();
 	if (!philo || !print)
 		return (1);

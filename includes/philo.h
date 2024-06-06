@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
+/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 08:58:34 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/31 11:08:08 by hznty            ###   ########.fr       */
+/*   Updated: 2024/06/05 13:53:22 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ time_to_die\ttime_to_eat\ttime_to_sleep\t \
 typedef enum e_flag
 {
 	RUN,
+	END,
 	STOP,
 	DEAD,
 	ERROR,
@@ -96,20 +97,18 @@ void	mutex_destroy(pthread_mutex_t *mutex);
 int		check_value(t_mutex *structure);
 t_time	get_value(t_mutex *mutex);
 void	set_value(t_mutex *mutex, t_time value);
-
-
+t_mutex	*create_mutex(void);
 
 /*	UTILS FONCTIONS	*/
 
 size_t	ft_strlen(char *str);
-long long	ft_atoll(const char *nptr);
-// int		ft_atoi(const char *nptr);
 t_time	get_time(t_philo *philo, t_time given_time);
 t_time	get_current_time(int flag);
 void	ft_usleep(size_t time, t_philo *philo);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 void	stop_philo(t_philo *phi, size_t size);
 void	exit_child(t_philo *phi, size_t size);
+long	ft_atoll(const char *nptr);
 
 /*	FREE FONCTIONS	*/
 
@@ -117,17 +116,11 @@ void	ft_free(void *data);
 void	free_struct(t_philo *phi, size_t size);
 
 /*	THREAD FONCTIONS	*/
+
 void	ft_philo(t_philo *philo, size_t	size);
 void	print_log(char *msg, t_philo *philo);
 void	*check_death(void *data);
-t_time	run_philo(t_mutex *mutex,t_time start_time);
+t_time	run_philo(t_mutex *mutex, t_time start_time);
 void	monitor(t_philo *phi, size_t size);
-
-/*	DEBUG	*/
-
-# define DEBUG "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n"
-void	test_mutex(t_mutex *mutex);
-void	printf_mutex(t_philo *phi, size_t size);
-void	printf_thread(t_philo *phi, size_t size);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hznty <hznty@student.42.fr>                +#+  +:+       +#+        */
+/*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 13:18:49 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/31 10:53:11 by hznty            ###   ########.fr       */
+/*   Updated: 2024/06/05 14:06:15 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 void	eat_n_sleep(t_philo *phi)
 {
 	t_time	time;
-	
+
+	if (phi->info.phi_nbr == 1)
+		return ;
 	print_log(EATING, phi);
 	ft_usleep(phi->info.time_eat, phi);
 	phi->eat++;
@@ -33,6 +35,8 @@ void	take_fork(t_philo *phi)
 {
 	int	count;
 
+	if (phi->info.phi_nbr == 1)
+		return ;
 	count = 2;
 	while (count)
 	{
@@ -48,7 +52,6 @@ void	take_fork(t_philo *phi)
 		}
 		usleep(500);
 	}
-	eat_n_sleep(phi);
 }
 
 void	*routine(void *data)
@@ -57,16 +60,22 @@ void	*routine(void *data)
 
 	phi = (t_philo *) data;
 	pthread_create(&phi->check_death, NULL, check_death, phi);
-	pthread_detach(phi->check_death);
 	while (get_value(phi->flag) < STOP)
 	{
 		if (phi->eat)
 			print_log(THINKING, phi);
 		take_fork(phi);
+		eat_n_sleep(phi);
 		if (phi->info.max_eat && phi->eat == phi->info.max_eat)
+		{
+			set_value(phi->flag, END);
 			break ;
+		}
 	}
-	set_value(phi->flag, STOP);
+	while (get_value(phi->flag) < STOP)
+		usleep(200);
+	set_value(phi->flag, EXIT);
+	pthread_join(phi->check_death, NULL);
 	return (NULL);
 }
 

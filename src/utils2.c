@@ -6,14 +6,13 @@
 /*   By: macassag <macassag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 11:11:57 by macassag          #+#    #+#             */
-/*   Updated: 2024/05/29 11:47:59 by macassag         ###   ########.fr       */
+/*   Updated: 2024/06/05 14:03:13 by macassag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-
-t_time	run_philo(t_mutex *mutex,t_time start_time)
+t_time	run_philo(t_mutex *mutex, t_time start_time)
 {
 	static t_time	time;
 	t_time			ret;
@@ -40,9 +39,13 @@ void	stop_philo(t_philo *phi, size_t size)
 	while (i < size)
 	{
 		if (get_value(phi[i].flag) < STOP)
+		{
 			set_value(phi[i].flag, STOP);
+			pthread_join(phi[i].thread, NULL);
+		}
 		i++;
 	}
+	usleep(500);
 }
 
 // exit all the philosophers

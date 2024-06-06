@@ -1,7 +1,7 @@
 CC = cc
 
 # DFLAGS = -fsanitize=thread -pthread 
-CFLAGS = -pthread -g3 -Wall -Wextra -Werror -I 
+CFLAGS = -pthread -g3 -Wall -fsanitize=thread -Wextra -Werror -I 
 
 INCS		=	includes
 SRC_DIR		=	./src
